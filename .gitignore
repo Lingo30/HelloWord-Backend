@@ -6,4 +6,3 @@ uwsgi.log
 uwsgi.pid
 /backend/__pycache__
 /helloword/__pycache__
-/helloword/migrations
