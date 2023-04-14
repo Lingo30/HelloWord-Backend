@@ -3,8 +3,83 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-from helloword.models import Word,UserInfo
+from helloword.models import Word,UserInfo,Example,WordExample,WordRelation
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
+
+def add_relation(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    word_a = data.get('word_a')
+    word_b = data.get('word_b')
+
+    if (word_a == word_b):
+        response['msg'] = '单词重复'
+        return JsonResponse(response)
+
+    if (word_b<word_a):
+        t=word_b
+        word_b=word_a
+        word_a=t
+    type = data.get('type')
+
+    try:
+        word_a_obj = Word.objects.get(word=word_a)
+        word_b_obj = Word.objects.get(word=word_b)
+
+        if (WordRelation.objects.filter(word_id=word_a_obj,related_word_id=word_b_obj)):
+            response['msg'] = '已存在关系'
+            return JsonResponse(response)
+
+        new_WordRelation = WordRelation(
+            word_id=word_a_obj,
+            related_word_id=word_b_obj,
+            relation_type=type
+        )
+        new_WordRelation.save()
+
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+# 一个例句link一个已有单词
+def add_example(request):
+
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    word = data.get('word')
+    example_str = data.get('example')
+
+    try:
+        word_obj = Word.objects.get(word=word)
+        if Example.objects.filter(example_sentence=example_str).count()==0:
+            new_example = Example(
+                example_sentence=example_str
+            )
+            new_example.save()
+
+        example_obj=Example.objects.get(example_sentence=example_str)
+
+        if (WordExample.objects.filter(word_id=word_obj,example_id=example_obj)):
+            response['msg'] = '例句已存在'
+            return JsonResponse(response)
+
+        new_WordExample = WordExample(
+            word_id=word_obj,
+            example_id = example_obj
+        )
+        new_WordExample.save()
+
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def add_studylist_from_public(request):
 

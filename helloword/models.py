@@ -5,6 +5,7 @@ class UserInfo(models.Model):
     email = models.EmailField(null=True)
     password_hash = models.CharField(max_length=64, unique=True)
     daily_words_count = models.IntegerField(null=True,default=200)
+    # TODO last_study_list
 
 class Word(models.Model):
     word = models.CharField(max_length=32)
@@ -37,6 +38,7 @@ class UserStudyList(models.Model):
     list_name = models.CharField(max_length=64)
     word_count = models.IntegerField(null=True)
     last_study_date = models.DateField(auto_now=True)
+    # TODO head UserStudyListItem_id
 
 class UserStudyListItem(models.Model):
     user_study_list_id = models.ForeignKey("UserStudyList", on_delete=models.CASCADE)
