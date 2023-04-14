@@ -39,6 +39,8 @@ urlpatterns = [
     path("add_word/",initview.add_word),
     path("add_public_list/",initview.add_public_list),
     path("add_studylist_from_public/",initview.add_studylist_from_public),
+    path("add_relation/",initview.add_relation),
+    path("add_example/",initview.add_example)
 
 
 
