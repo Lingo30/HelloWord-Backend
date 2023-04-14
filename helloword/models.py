@@ -28,7 +28,7 @@ class UserStudyWordInfo(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     word_id = models.ForeignKey("Word", on_delete=models.CASCADE)
     mastery_level = models.IntegerField(default=0)
-    last_reviewed = models.DateTimeField()
+    last_reviewed = models.DateTimeField(auto_now=True)
     forget_times = models.IntegerField(default=0)
     simple = models.BooleanField(default=False)
 
@@ -36,7 +36,7 @@ class UserStudyList(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     list_name = models.CharField(max_length=64)
     word_count = models.IntegerField(null=True)
-    last_study_date = models.DateField()
+    last_study_date = models.DateField(auto_now=True)
 
 class UserStudyListItem(models.Model):
     user_study_list_id = models.ForeignKey("UserStudyList", on_delete=models.CASCADE)
