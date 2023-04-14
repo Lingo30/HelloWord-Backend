@@ -19,10 +19,28 @@ from django.urls import path
 from helloword import userInfo as userview
 from helloword import initadd as initview
 
+from helloword import wordlist as listview
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    # user
     path("login/", userview.login),
     path("register/", userview.register),
+
+    # wordlist
+    path("get_user_wordlists/",listview.get_user_wordlists),
+    path("get_wordlist_info/",listview.get_wordlist_info),
+    path("get_words_info/",listview.get_words_info),
+    path("edit_wordlists/",listview.edit_wordlists),
+    path("get_wordlists/",listview.get_wordlists),
+
+    # init mysql
     path("add_word/",initview.add_word),
+    path("add_public_list/",initview.add_public_list),
+    path("add_studylist_from_public/",initview.add_studylist_from_public),
+
+
+
     
 ]
