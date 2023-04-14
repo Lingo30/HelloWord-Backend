@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from helloword import userInfo as userview
+from helloword import initadd as initview
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("login/", userview.login),
     path("register/", userview.register),
+    path("add_word/",initview.add_word),
+    
 ]
