@@ -29,7 +29,7 @@ class UserStudyWordInfo(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     word_id = models.ForeignKey("Word", on_delete=models.CASCADE)
     mastery_level = models.IntegerField(default=0)
-    last_reviewed = models.DateTimeField(auto_now=True)
+    last_reviewed = models.DateField(auto_now=True, null=True)
     forget_times = models.IntegerField(default=0)
     simple = models.BooleanField(default=False)
 
@@ -85,4 +85,6 @@ class WritingHistory(models.Model):
 
 class ChatHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    communication = models.CharField(max_length=1023)
+    message = models.CharField(max_length=512, null=True)
+    type = models.BooleanField(null=True)
+    post_time = models.DateTimeField(auto_now=True, null=True)
