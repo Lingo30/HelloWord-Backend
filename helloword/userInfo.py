@@ -4,6 +4,19 @@ from django.core import serializers
 import json
 from helloword.models import UserInfo
 
+def submit_image(request):
+    print("hello")
+    response = {}
+    response['state'] = False
+
+    try:
+        userInfo=UserInfo.objects.get(id=1)
+        userInfo.user_avatar=request.FILES.get('img')
+        userInfo.save()
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def login(request):
     print("hello")

@@ -22,13 +22,22 @@ from helloword import initadd as initview
 from helloword import wordlist as listview
 from helloword import word as wordview
 from helloword import chat
+import os
+from django.urls import re_path
+from django.conf import settings
+from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 
+    # media
+    re_path(r'^media/user_avatar/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.MEDIA_ROOT, 'user_avatar/')}),
+
     # user
     path("login/", userview.login),
     path("register/", userview.register),
+
+    path("submit_image/",userview.submit_image),
 
     # wordlist
     path("get_user_wordlists/",listview.get_user_wordlists),
