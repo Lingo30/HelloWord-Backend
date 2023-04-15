@@ -3,10 +3,50 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-from helloword.models import Word,UserInfo
+from helloword.models import Word,UserInfo,FileInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 
 Mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+
+def get_wordList_from_file(request):
+    print("hello")
+    response = {}
+    response['state'] = False
+
+    try:
+        fileInfo = FileInfo(file_info=request.FILES.get('file'))
+        fileInfo.save()
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+def get_official_wordlists(request):
+    response = {}
+    response['state'] = False
+
+    try:
+
+        study_list = WordList.objects.all()
+
+        ret = []
+        for k in study_list:
+            cur = {
+                'listId': k.id,
+                'name': k.list_name,
+                'creator':k.list_author_name,
+                'num': WordListItem.objects.filter(word_list_id_id=k).count()
+            }
+            ret.append(cur)
+
+
+        response['lists'] = ret
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def get_user_wordlists(request):
     response = {}
@@ -42,7 +82,7 @@ def get_wordlist_info(request):
         response['num'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list).count()
         response['creator'] = 'TODO'
         date = str(study_list.last_study_date)
-        response['date'] = {'month':Mon[int(date[5:7])],'day':date[8:10]}
+        response['date'] = {'month':Mon[int(date[5:7])-1],'day':date[8:10]}
 
         response['state'] = True
 

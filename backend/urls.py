@@ -45,6 +45,8 @@ urlpatterns = [
     path("get_words_info/",listview.get_words_info),
     path("edit_wordlists/",listview.edit_wordlists),
     path("get_wordlists/",listview.get_wordlists),
+    path("get_official_wordlists/",listview.get_official_wordlists),
+    path("get_wordList_from_file/",listview.get_wordList_from_file),
 
     # learn word
     path("get_word_releation/",wordview.get_word_releation),

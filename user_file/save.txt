@@ -1,0 +1,33 @@
+SECRET_KEY = "django-insecure-qqelz6sfepe@h0#*f#711+prpi3yixwq_=zs7##x$ww59qmj^y"
+mysql -h 127.0.0.1 -P 3306 -u root -p --local-infile
+密码 123
+
+mysql -h 127.0.0.1 -P 3306 -u root -p --local-infile
+
+python manage.py collectstatic
+
+cat /var/log/nginx/error.log
+
+python manage.py runserver
+
+sudo uwsgi uwsgi.ini
+sudo killall -9 uwsgi
+
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+sudo nginx -s stop
+sudo service nginx restart
+
+vim /etc/nginx/nginx.conf
+
+cd ../../helloword/backend
+
+
+
+cd D:\SOFTWARE\mysql\mysql-8.0.28-winx64\bin
+net start mysql157
+mysql -h 127.0.0.1 -P 3306 -u root -p --local-infile
+use backend_test_1;
