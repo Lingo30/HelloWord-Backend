@@ -83,7 +83,7 @@ def group_word_learn_save(request):
     try:
         user = UserInfo.objects.get(id=user_id)
         for k in ret_words:
-            word = Word.objects.get(id=k['id'])
+            word = Word.objects.get(id=k['word_id'])
             studyinfo = UserStudyWordInfo.objects.filter(user_id_id=user,word_id_id=word)
             if studyinfo.count()==0:
                 new_studyinfo = UserStudyWordInfo(
@@ -124,9 +124,9 @@ def get_group_words_in_list(request):
         user = UserInfo.objects.get(id=user_id)
 
         # TODO
-        user_list_id = 2
-        UserStudyListItem_head = 7
-        new_head=7
+        user_list_id = 1
+        UserStudyListItem_head = 0
+        new_head=0
         userlist_obj = UserStudyList.objects.get(id=user_list_id)
 
 
