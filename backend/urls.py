@@ -21,6 +21,7 @@ from helloword import initadd as initview
 
 from helloword import wordlist as listview
 from helloword import word as wordview
+from helloword import chat
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -46,9 +47,11 @@ urlpatterns = [
     path("add_public_list/",initview.add_public_list),
     path("add_studylist_from_public/",initview.add_studylist_from_public),
     path("add_relation/",initview.add_relation),
-    path("add_example/",initview.add_example)
+    path("add_example/",initview.add_example),
 
-
+    # chat
+    path("user_send/", chat.user_send),
+    path("get_log_history/", chat.get_log_history)
 
     
 ]
