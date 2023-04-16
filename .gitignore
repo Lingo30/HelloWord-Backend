@@ -8,3 +8,4 @@ uwsgi.pid
 /helloword/__pycache__
 /helloword/migrations/__pycache__
 */__pycache__/
+*/*/__pycache__

@@ -7,6 +7,8 @@ from helloword.models import UserStudyWordInfo
 from helloword.models import Word
 from helloword.models import WordsStory
 from helloword.models import WritingHistory
+from openai import client
+from openai.tools import vocabulary, reading, writing
 
 # story
 def get_today_words(request):
@@ -49,8 +51,8 @@ def words_to_story(request):
         if not words:
             response['msg'] = '请选择单词！'
         else:
-            # TODO gpt生成story，输入在words中，输出到story
-            story = 'gpt story'
+            message = vocabulary.gen_story_from_words(words)
+            story = client.send_message(message)
             answer = ' '.join(words)
             words_story = WordsStory(user_id_id=user_id, story=story, answers=answer)
             words_story.save()
@@ -85,17 +87,21 @@ def get_blank_text(request):
                 word = Word.objects.get(id=today_words[i].word_id)
                 words.append(word)
             response['state'] = True
-        # TODO 调用gpt获取完整文章，输入为words，输出到article
-        article = ' is '.join(words) # 先给个静态数据用于测试
-        wordlist = []
-        for word in words:
-            start = article.index(word)
-            end = start + len(word)
-            cur = {
-                'start': start,
-                'end': end
-            }
-            wordlist.append(cur)
+        message = vocabulary.gen_cloze_from_words(words)
+        cloze = client.send_message(message)
+        # first convert cloze from string to JSON and then extract article and answer from cloze in JSON format
+        cloze = json.loads(cloze)
+        article = cloze['content']
+        wordlist = cloze['answer']
+        # wordlist = []
+        # for word in words:
+        #     start = article.index(word)
+        #     end = start + len(word)
+        #     cur = {
+        #         'start': start,
+        #         'end': end
+        #     }
+        #     wordlist.append(cur)
         response['content'] = article
         response['wordList'] = wordlist
 
@@ -117,8 +123,8 @@ def writing_analysis(request):
     user_article = data.get('user_article')
 
     try:
-        # TODO gpt 分析writing，文章信息在user_article，分析结果输出到output
-        output = 'gpt writing output'
+        message = writing.analyze_essay(user_article)
+        output = client.send_message(message)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
@@ -139,10 +145,15 @@ def sentence_analysis(request):
 
     try:
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
-        output = 'gpt sentence output'
+        message = reading.analyze_sentence_alone(user_sentence)
+        output = client.send_message(message)
+        output = json.loads(output)
+        translation = output['content']
+        structure = output['structure']
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
-        response['translation'] = output
+        response['translation'] = translation
+        response['structure'] = structure
         response['state'] = True
         response['msg'] = 'success'
     except Exception as e:
