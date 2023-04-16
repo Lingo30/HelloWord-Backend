@@ -17,8 +17,7 @@ def user_send(request):
     try:
         user_chat = ChatHistory(user_id_id=user_id, message=question, type=True)
         user_chat.save()
-        # TODO 调用gpt得到数据
-
+        # TODO 调用gpt得到数据，用户的输入在question中，输出保存在gpt_respond中
         gpt_respond = 'gpt respond'
         gpt_chat = ChatHistory(user_id_id=user_id, message=gpt_respond, type=False)
         gpt_chat.save()
