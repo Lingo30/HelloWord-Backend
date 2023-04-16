@@ -21,7 +21,8 @@ from helloword import initadd as initview
 
 from helloword import wordlist as listview
 from helloword import word as wordview
-from helloword import chat
+from helloword import chat as chatview
+from helloword import review as reviewview
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -31,27 +32,36 @@ urlpatterns = [
     path("register/", userview.register),
 
     # wordlist
-    path("get_user_wordlists/",listview.get_user_wordlists),
-    path("get_wordlist_info/",listview.get_wordlist_info),
-    path("get_words_info/",listview.get_words_info),
-    path("edit_wordlists/",listview.edit_wordlists),
-    path("get_wordlists/",listview.get_wordlists),
+    path("get_user_wordlists/", listview.get_user_wordlists),
+    path("get_wordlist_info/", listview.get_wordlist_info),
+    path("get_words_info/", listview.get_words_info),
+    path("edit_wordlists/", listview.edit_wordlists),
+    path("get_wordlists/", listview.get_wordlists),
 
     # learn word
-    path("get_word_releation/",wordview.get_word_releation),
-    path("group_word_learn_save/",wordview.group_word_learn_save),
-    path("get_group_words_in_list/",wordview.get_group_words_in_list),
+    path("get_word_releation/", wordview.get_word_releation),
+    path("group_word_learn_save/", wordview.group_word_learn_save),
+    path("get_group_words_in_list/", wordview.get_group_words_in_list),
 
     # init mysql
-    path("add_word/",initview.add_word),
-    path("add_public_list/",initview.add_public_list),
-    path("add_studylist_from_public/",initview.add_studylist_from_public),
-    path("add_relation/",initview.add_relation),
-    path("add_example/",initview.add_example),
+    path("add_word/", initview.add_word),
+    path("add_public_list/", initview.add_public_list),
+    path("add_studylist_from_public/", initview.add_studylist_from_public),
+    path("add_relation/", initview.add_relation),
+    path("add_example/", initview.add_example),
 
     # chat
-    path("user_send/", chat.user_send),
-    path("get_log_history/", chat.get_log_history)
+    path("user_send/", chatview.user_send),
+    path("get_log_history/", chatview.get_log_history),
 
-    
+    # review
+    # blank text
+    path("get_blank_text/", reviewview.get_blank_text),
+    # story
+    path("get_today_words/", reviewview.get_today_words),
+    path("words_to_story/", reviewview.words_to_story),
+    # writing
+    path("writing_analysis/", reviewview.writing_analysis),
+    path("sentence_analysis/", reviewview.sentence_analysis)
+
 ]
