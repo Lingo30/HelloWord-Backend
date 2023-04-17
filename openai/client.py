@@ -1,5 +1,5 @@
 import openai
-from tools.utils import completion_with_backoff, num_tokens_from_messages
+from openai.tools.utils import completion_with_backoff, num_tokens_from_messages
 class Clinet(object):
     def __init__(self, api_key="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", model="gpt-3.5-turbo-0301"):
         openai.api_key = api_key
