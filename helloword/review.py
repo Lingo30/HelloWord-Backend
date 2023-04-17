@@ -7,8 +7,8 @@ from helloword.models import UserStudyWordInfo
 from helloword.models import Word
 from helloword.models import WordsStory
 from helloword.models import WritingHistory
-from openai import client
-from openai.tools import vocabulary, reading, writing
+from chatgpt import client
+from chatgpt.tools import vocabulary, reading, writing
 
 # story
 def get_today_words(request):
@@ -125,10 +125,12 @@ def writing_analysis(request):
     try:
         message = writing.analyze_essay(user_article)
         output = client.Clinet().send_message(message)
+        print(output)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
         response['state'] = True
+        print(output)
     except Exception as e:
         response['msg'] = str(e)
 
