@@ -52,7 +52,7 @@ def words_to_story(request):
             response['msg'] = '请选择单词！'
         else:
             message = vocabulary.gen_story_from_words(words)
-            story = client.send_message(message)
+            story = client.Clinet().send_message(message)
             answer = ' '.join(words)
             words_story = WordsStory(user_id_id=user_id, story=story, answers=answer)
             words_story.save()
@@ -88,7 +88,7 @@ def get_blank_text(request):
                 words.append(word)
             response['state'] = True
         message = vocabulary.gen_cloze_from_words(words)
-        cloze = client.send_message(message)
+        cloze = client.Clinet().send_message(message)
         # first convert cloze from string to JSON and then extract article and answer from cloze in JSON format
         cloze = json.loads(cloze)
         article = cloze['content']
@@ -124,7 +124,7 @@ def writing_analysis(request):
 
     try:
         message = writing.analyze_essay(user_article)
-        output = client.send_message(message)
+        output = client.Clinet().send_message(message)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
@@ -146,7 +146,7 @@ def sentence_analysis(request):
     try:
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
         message = reading.analyze_sentence_alone(user_sentence)
-        output = client.send_message(message)
+        output = client.Clinet().send_message(message)
         output = json.loads(output)
         translation = output['content']
         structure = output['structure']
