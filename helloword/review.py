@@ -126,7 +126,7 @@ def writing_analysis(request):
     try:
         message = writing.analyze_essay(user_article)
         output = client.Clinet().send_message(message)
-        print(output)
+        output = json.loads(output)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
