@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-from helloword.models import Word,UserInfo,FileInfo
+from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 
 Mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -82,6 +82,9 @@ def get_wordlist_info(request):
         response['name'] = study_list.list_name
         response['num'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list).count()
         response['creator'] = 'TODO'
+        response['learned'] = UserStudyListItem.objects.filter(word_id__in=UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id')).count()
+
+        print(UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id'))
         date = str(study_list.last_study_date)
         response['date'] = {'month':Mon[int(date[5:7])-1],'day':date[8:10]}
 
@@ -234,6 +237,7 @@ def add_wordlist_from_official(request):
             add_to_list.save()
 
         response['state'] = True
+        response['listId'] = to_add.id
 
     except Exception as e:
         response['msg'] = str(e)
