@@ -6,7 +6,7 @@ class UserInfo(models.Model):
     password_hash = models.CharField(max_length=64, unique=True)
     daily_words_count = models.IntegerField(null=True,default=200)
     user_avatar = models.ImageField(upload_to="user_avatar/", null=True, default="user_avatar/default_avatar.jpg")
-    last_study_list = models.ForeignKey("UserStudyList", null = True, on_delete=models.CASCADE)
+    last_study_list = models.ForeignKey("UserStudyList", null = True, on_delete=models.SET_NULL)
 
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")

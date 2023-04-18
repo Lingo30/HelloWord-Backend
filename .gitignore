@@ -10,3 +10,5 @@ test.py
 /helloword/migrations/__pycache__
 */__pycache__/
 */*/__pycache__
+/media
+*/user_file
