@@ -92,16 +92,17 @@ def get_blank_text(request):
         # first convert cloze from string to JSON and then extract article and answer from cloze in JSON format
         cloze = json.loads(cloze)
         article = cloze['content']
-        wordlist = cloze['answer']
-        # wordlist = []
-        # for word in words:
-        #     start = article.index(word)
-        #     end = start + len(word)
-        #     cur = {
-        #         'start': start,
-        #         'end': end
-        #     }
-        #     wordlist.append(cur)
+        # wordlist = cloze['answer']
+        wordlist = []
+        for word in words:
+            target = '$' + word + '$'
+            start = article.index(target)
+            end = start + len(target)
+            cur = {
+                'start': start,
+                'end': end
+            }
+            wordlist.append(cur)
         response['content'] = article
         response['wordList'] = wordlist
 
