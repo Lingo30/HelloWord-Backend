@@ -40,6 +40,9 @@ urlpatterns = [
     path("register/", userview.register),
 
     path("submit_image/",userview.submit_image),
+    path("change_pwd/",userview.change_pwd),
+    path("get_user_info/",userview.get_user_info),
+    path("get_recommend_tags/",userview.get_recommend_tags),
 
     # wordlist
     path("get_user_wordlists/",listview.get_user_wordlists),
