@@ -82,7 +82,7 @@ def get_wordlist_info(request):
         response['name'] = study_list.list_name
         response['num'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list).count()
         response['creator'] = 'TODO'
-        response['learned'] = UserStudyListItem.objects.filter(word_id__in=UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id')).count()
+        response['learned'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list,word_id__in=UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id')).count()
 
         print(UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id'))
         date = str(study_list.last_study_date)
@@ -327,6 +327,7 @@ def add_wordlist_from_file(request):
             add_to_list.save()
 
         response['state'] = True
+        response['listId'] = to_add.id
 
     except Exception as e:
         response['msg'] = str(e)
