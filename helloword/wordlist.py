@@ -17,6 +17,7 @@ def get_wordList_from_file(request):
     try:
         fileInfo = FileInfo(file_info=request.FILES.get('file'))
         fileInfo.save()
+        response['state'] = True
     except Exception as e:
         response['msg'] = str(e)
 
@@ -229,6 +230,95 @@ def add_wordlist_from_official(request):
                 user_study_list_id=UserStudyList.objects.get(id=to_add.id),
                 #user_study_list_id=UserStudyList.objects.get(id=1),
                 word_id = i.word_id
+            )
+            add_to_list.save()
+
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
+def get_wordList_from_file(request):
+
+    response = {}
+    response['state'] = False
+
+    try:
+        file = request.FILES.get('file')
+        newfile = FileInfo(file_info=file)
+        newfile.save()
+
+        filepath = 'media/'+str(newfile.file_info)
+        print(filepath)
+        contents=open(filepath, 'r').read()
+        print(contents)
+        words = []
+
+        oneword = ''
+
+        for c in contents:
+            if c.isalpha():
+                oneword += c
+            else:
+                if len(oneword) > 0:
+                    words.append(oneword.lower())
+                oneword = ''
+
+        print(words)
+        response['words']=words
+
+        ret = []
+        word_list = Word.objects.filter(word__in=words)
+        if word_list.count()==0:
+            response['msg']='输入文件不包含有效单词'
+            return JsonResponse(response)
+
+        for k in word_list:
+            cur = {
+                'wordId':k.id,
+                'word':k.word,
+                'meaning':k.definition_cn
+            }
+            ret.append(cur)
+
+        response['wordlist']=ret
+        response['state'] = True
+        response['msg'] = '词单导入成功'
+
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+def add_wordlist_from_file(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    study_list_name = data.get('name')
+    user_id = data.get('userId')
+    words = data.get('words')
+
+    try:
+
+        wordlist=Word.objects.filter(id__in=words)
+
+
+        user = UserInfo.objects.get(id=user_id)
+
+        to_add = UserStudyList(
+            user_id=user,
+            list_name=study_list_name
+        )
+        to_add.save()
+
+        for k in wordlist:
+            add_to_list = UserStudyListItem(
+                user_study_list_id=to_add,
+                word_id=k
             )
             add_to_list.save()
 

@@ -105,8 +105,7 @@ def add_studylist_from_public(request):
         words = WordListItem.objects.filter(word_list_id_id=public)
         for i in words:
             add_to_list = UserStudyListItem(
-                user_study_list_id=UserStudyList.objects.get(id=to_add.id),
-                #user_study_list_id=UserStudyList.objects.get(id=1),
+                user_study_list_id=to_add,
                 word_id = i.word_id
             )
             add_to_list.save()

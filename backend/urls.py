@@ -53,6 +53,8 @@ urlpatterns = [
 
     path("update_learn_wordlist/", listview.update_learn_wordlist),
     path("add_wordlist_from_official/", listview.add_wordlist_from_official),
+    path("get_wordList_from_file/",listview.get_wordList_from_file),
+    path("add_wordlist_from_file/",listview.add_wordlist_from_file),
 
     # learn word
     path("get_word_releation/", wordview.get_word_releation),
