@@ -8,6 +8,23 @@ import random
 from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,UserStudyWordInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 
+def reset_study_list(request):
+    response = {}
+    response['state'] = False
+
+    data = json.loads(request.body.decode('utf-8'))
+    study_list_id = data.get('study_list_id')
+
+    try:
+        reset = UserStudyList.objects.get(id=study_list_id)
+        reset.head = 0
+        reset.save()
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
 def get_word_releation(request):
     response = {}
     response['state'] = False
@@ -79,6 +96,8 @@ def group_word_learn_save(request):
     user_id = data.get('user_id')
     ret_words = data.get('words')
 
+    new_head = 0
+
 
     try:
         user = UserInfo.objects.get(id=user_id)
@@ -94,6 +113,8 @@ def group_word_learn_save(request):
                     simple=k['simple']
                 )
                 new_studyinfo.save()
+                if new_studyinfo.word_id_id > new_head:
+                    new_head = new_studyinfo.word_id_id
             else :
                 f=studyinfo[0].forget_times
                 m=studyinfo[0].mastery_level
@@ -103,8 +124,16 @@ def group_word_learn_save(request):
                 s.mastery_level=m+1
                 s.save()
 
+        study_list = user.last_study_list
+        study_list.head = new_head
+        study_list.save()
 
         response['state'] = True
+
+        response['new_head'] = new_head
+
+
+
 
     except Exception as e:
         response['msg'] = str(e)
@@ -123,11 +152,20 @@ def get_group_words_in_list(request):
     try:
         user = UserInfo.objects.get(id=user_id)
 
-        # TODO
-        user_list_id = 1
-        UserStudyListItem_head = 0
-        new_head=0
-        userlist_obj = UserStudyList.objects.get(id=user_list_id)
+        # 用户是否有单词书
+        if not user.last_study_list:
+            response['hasBook'] = False
+            return JsonResponse(response)
+
+        response['hasBook'] = True
+
+
+        # user_list_id = 1
+        #UserStudyListItem_head = 0
+        #new_head=0
+        userlist_obj = user.last_study_list
+        UserStudyListItem_head = userlist_obj.head
+        new_head = UserStudyListItem_head
 
 
         new = []
@@ -138,9 +176,14 @@ def get_group_words_in_list(request):
             if len(new)>3:
                 break
 
+            # TODO 重置此单功能删除本行逻辑
             if UserStudyWordInfo.objects.filter(user_id_id=user,word_id_id=k.word_id).count()==0:
                 new.append(k.word_id.id)
             new_head=k.id
+
+        # 新单词全部背完; TODO 需要增加重置逻辑
+        if len(new) == 0:
+            return JsonResponse(response)
 
         #print(new)
 
@@ -151,7 +194,7 @@ def get_group_words_in_list(request):
         #print(review_list)
         info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
         #print(info_list)
-        act = list(info_list.exclude(last_reviewed__date__gte=datetime.date.today()+datetime.timedelta(days=1)).values_list('id', flat=True))
+        act = list(info_list.exclude(last_reviewed__gte=datetime.date.today()+datetime.timedelta(days=1)).values_list('id', flat=True))
         #print(act)
 
         if(len(act)<size):
@@ -165,6 +208,7 @@ def get_group_words_in_list(request):
                     new.append(k.word_id.id)
                 new_head = k.id
 
+        # TODO 补充复习单词逻辑 现在从之前学习过的词中random
         if len(act)>size:
             new.extend(random.sample(act, size))
         else:
@@ -191,7 +235,7 @@ def get_group_words_in_list(request):
             example_sen = '暂无例句'
             example_objs = WordExample.objects.filter(word_id_id=base_word)
             if example_objs.count() > 0:
-                # TODO
+                # TODO 补充例句返回逻辑 现在返回首个例句
                 example_sen = example_objs[0].example_id.example_sentence
 
             synonyms_list = []

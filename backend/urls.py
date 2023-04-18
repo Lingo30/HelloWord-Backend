@@ -50,10 +50,16 @@ urlpatterns = [
     path("get_official_wordlists/",listview.get_official_wordlists),
     path("get_wordList_from_file/",listview.get_wordList_from_file),
 
+
+    path("update_learn_wordlist/", listview.update_learn_wordlist),
+    path("add_wordlist_from_official/", listview.add_wordlist_from_official),
+
     # learn word
     path("get_word_releation/", wordview.get_word_releation),
     path("group_word_learn_save/", wordview.group_word_learn_save),
     path("get_group_words_in_list/", wordview.get_group_words_in_list),
+
+    path("reset_study_list/", wordview.reset_study_list),
 
     # init mysql
     path("add_word/", initview.add_word),
