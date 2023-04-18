@@ -5,7 +5,6 @@ class UserInfo(models.Model):
     email = models.EmailField(null=True)
     password_hash = models.CharField(max_length=64, unique=True)
     daily_words_count = models.IntegerField(null=True,default=200)
-    # TODO last_study_list
     user_avatar = models.ImageField(upload_to="user_avatar/", null=True, default="user_avatar/default_avatar.jpg")
     last_study_list = models.ForeignKey("UserStudyList", null = True, on_delete=models.CASCADE)
 
@@ -43,7 +42,6 @@ class UserStudyList(models.Model):
     list_name = models.CharField(max_length=64)
     word_count = models.IntegerField(null=True)
     last_study_date = models.DateField(auto_now=True)
-    # TODO head UserStudyListItem_id 此处不使用外键，因为初始化为0用于比较大小
     head = models.IntegerField(null=True, default=0)
 
 class UserStudyListItem(models.Model):

@@ -172,3 +172,69 @@ def get_wordlists(request):
 
     return JsonResponse(response)
 
+
+def update_learn_wordlist(request):
+    response = {}
+    response['state'] = False
+
+    data = json.loads(request.body.decode('utf-8'))
+    study_list_id = data.get('listId')
+    user_id = data.get('userId')
+
+    try:
+        study_list = UserStudyList.objects.get(id=study_list_id)
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.last_study_list=study_list
+        study_list.save()
+        user_obj.save()
+
+        response['last_study_list'] = study_list.list_name
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
+def add_wordlist_from_official(request):
+
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    public_id = data.get('listId')
+    user_id = data.get('userId')
+    # TODO 根据官方词单创建，用户输入名字？
+    # study_list_name = data.get('study_list_name')
+
+    try:
+        user = UserInfo.objects.get(id=user_id)
+        public = WordList.objects.get(id=public_id)
+
+        # TODO 官方词单创建使用官方名
+        # TODO 一个官方词单创建几次；至多多少词单
+        study_list_name = public.list_name
+
+
+        to_add = UserStudyList(
+            user_id=user,
+            list_name = study_list_name
+        )
+        to_add.save()
+
+
+        words = WordListItem.objects.filter(word_list_id_id=public)
+        for i in words:
+            add_to_list = UserStudyListItem(
+                user_study_list_id=UserStudyList.objects.get(id=to_add.id),
+                #user_study_list_id=UserStudyList.objects.get(id=1),
+                word_id = i.word_id
+            )
+            add_to_list.save()
+
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
