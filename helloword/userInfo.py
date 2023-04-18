@@ -120,7 +120,7 @@ def get_user_info(request):
 
     try:
         response['info'] = {
-            'avatar_path':str(ENV['HOST'])+':9001/static/static/admin/img/search.svg',
+            'avatar_path':str(ENV['HOST'])+':9001/static/admin/img/search.svg',
             'email':'email',
             'words': 100,
             'name': 'name',
