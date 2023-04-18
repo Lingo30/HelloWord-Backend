@@ -77,3 +77,61 @@ def register(request):
         response['msg'] = str(e)
 
     return JsonResponse(response)
+
+def change_pwd(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode())
+    user_id = data.get('user_id')
+    old_pwd = data.get('old_pwd')
+    new_pwd = data.get('new_pwd')
+
+    try:
+        user = UserInfo.objects.get(id=user_id)
+
+        if user.password_hash == old_pwd:
+            user.password_hash  = new_pwd
+            user.save()
+            response['state'] = True
+
+        else:
+            response['msg'] = '原密码错误'
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+ENV={}
+with open('env.json') as env:
+    ENV = json.load(env)
+
+def get_recommend_tags(request):
+    response = {}
+    response['tags'] = ['test1','test2']
+    return JsonResponse(response)
+
+def get_user_info(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode())
+    user_id = data.get('user_id')
+
+
+    try:
+        response['info'] = {
+            'avatar_path':'http://'+str(ENV['HOST'])+':9001/static/static/admin/img/search.svg',
+            'email':'email',
+            'words': 100,
+            'name': 'name',
+            'days':100,
+            'lists': 100,
+            'tags':['11','22']
+        }
+        response['state'] = True
+
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
