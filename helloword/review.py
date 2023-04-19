@@ -93,9 +93,13 @@ def get_blank_text(request):
         cloze = json.loads(cloze)
         article = cloze['content']
         # wordlist = cloze['answer']
+        print(words)
+        print(message)
+        print(article)
         wordlist = []
         for word in words:
             target = '$' + word + '$'
+            print(target)
             start = article.index(target)
             end = start + len(target)
             cur = {
