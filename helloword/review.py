@@ -96,7 +96,6 @@ def get_blank_text(request):
         wordlist = []
         for word in answer:
             target = '$' + word + '$'
-            print(target)
             start = article.index(target)
             end = start + len(target)
             cur = {
@@ -107,6 +106,7 @@ def get_blank_text(request):
         response['content'] = article
         response['wordList'] = wordlist
         response['answer'] = answer
+        response['originWords'] = words
 
 
     except Exception as e:
