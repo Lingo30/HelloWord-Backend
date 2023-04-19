@@ -96,7 +96,6 @@ def get_blank_text(request):
         wordlist = []
         for word in answer:
             target = '$' + word + '$'
-            print(target)
             start = article.index(target)
             end = start + len(target)
             cur = {
