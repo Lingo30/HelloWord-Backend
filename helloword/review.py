@@ -24,7 +24,7 @@ def get_today_words(request):
         today_words = UserStudyWordInfo.objects.filter(user_id_id=user_id, last_reviewed=now_date)
         words = []
         for item in today_words:
-            this_word = Word.objects.get(id=item.word_id)
+            this_word = item.word_id
             cur = {
                 'id': this_word.id,
                 'word': this_word.word
@@ -84,7 +84,7 @@ def get_blank_text(request):
             # response['msg'] = 'please begin today's study'
         else:
             for i in range(5):
-                word = Word.objects.get(id=today_words[i].word_id).word
+                word = today_words[i].word_id.word
                 words.append(word)
             response['state'] = True
         message = vocabulary.gen_cloze_from_words(words)
