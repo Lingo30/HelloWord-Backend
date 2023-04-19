@@ -89,15 +89,12 @@ def get_blank_text(request):
             response['state'] = True
         message = vocabulary.gen_cloze_from_words(words)
         cloze = client.Clinet().send_message(message)
-        # first convert cloze from string to JSON and then extract article and answer from cloze in JSON format
+        
         cloze = json.loads(cloze)
         article = cloze['content']
-        # wordlist = cloze['answer']
-        print(words)
-        print(message)
-        print(article)
+        answer = cloze['answer']
         wordlist = []
-        for word in words:
+        for word in answer:
             target = '$' + word + '$'
             print(target)
             start = article.index(target)
@@ -109,6 +106,7 @@ def get_blank_text(request):
             wordlist.append(cur)
         response['content'] = article
         response['wordList'] = wordlist
+        response['answer'] = answer
 
 
     except Exception as e:
