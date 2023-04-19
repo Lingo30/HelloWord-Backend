@@ -81,7 +81,7 @@ def get_wordlist_info(request):
 
         response['name'] = study_list.list_name
         response['num'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list).count()
-        response['creator'] = 'TODO'
+        response['creator'] = study_list.list_author.username if study_list.list_author else 'HelloWord团队'
         response['learned'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list,word_id__in=UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id')).count()
 
         print(UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id'))
@@ -208,17 +208,13 @@ def add_wordlist_from_official(request):
     data = json.loads(request.body.decode('utf-8'))
     public_id = data.get('listId')
     user_id = data.get('userId')
-    # TODO 根据官方词单创建，用户输入名字？
-    # study_list_name = data.get('study_list_name')
+    study_list_name = data.get('name')
 
     try:
         user = UserInfo.objects.get(id=user_id)
         public = WordList.objects.get(id=public_id)
 
-        # TODO 官方词单创建使用官方名
         # TODO 一个官方词单创建几次；至多多少词单
-        study_list_name = public.list_name
-
 
         to_add = UserStudyList(
             user_id=user,
@@ -231,7 +227,6 @@ def add_wordlist_from_official(request):
         for i in words:
             add_to_list = UserStudyListItem(
                 user_study_list_id=UserStudyList.objects.get(id=to_add.id),
-                #user_study_list_id=UserStudyList.objects.get(id=1),
                 word_id = i.word_id
             )
             add_to_list.save()
@@ -315,7 +310,8 @@ def add_wordlist_from_file(request):
 
         to_add = UserStudyList(
             user_id=user,
-            list_name=study_list_name
+            list_name=study_list_name,
+            list_author=user
         )
         to_add.save()
 

@@ -8,6 +8,10 @@ class UserInfo(models.Model):
     user_avatar = models.ImageField(upload_to="user_avatar/", null=True, default="user_avatar/default_avatar.jpg")
     last_study_list = models.ForeignKey("UserStudyList", null = True, on_delete=models.SET_NULL)
 
+    last_study_date = models.CharField(max_length=128, null = True, default="")
+    study_days_count = models.IntegerField(null=True,default=0)
+    not_unique_name = models.CharField(max_length=64,null=True)
+
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")
 
@@ -25,6 +29,8 @@ class WordList(models.Model):
     word_count = models.IntegerField(null=True)
     gen_type = models.IntegerField(null=True)
 
+    list_author = models.ForeignKey("UserInfo", null = True, on_delete=models.SET_NULL)
+
 class WordListItem(models.Model):
     word_list_id = models.ForeignKey("WordList", on_delete=models.CASCADE)
     word_id = models.ForeignKey("Word", on_delete=models.CASCADE)
@@ -38,15 +44,20 @@ class UserStudyWordInfo(models.Model):
     simple = models.BooleanField(default=False)
 
 class UserStudyList(models.Model):
-    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    user_id = models.ForeignKey("UserInfo", related_name='study',on_delete=models.CASCADE)
     list_name = models.CharField(max_length=64)
     word_count = models.IntegerField(null=True)
     last_study_date = models.DateField(auto_now=True)
     head = models.IntegerField(null=True, default=0)
 
+    list_author = models.ForeignKey("UserInfo", related_name='create',null=True, on_delete=models.SET_NULL)
+
+
 class UserStudyListItem(models.Model):
     user_study_list_id = models.ForeignKey("UserStudyList", on_delete=models.CASCADE)
     word_id = models.ForeignKey("Word", on_delete=models.CASCADE)
+
+    has_done = models.BooleanField(null=True, default=False)
 
 class WordRelation(models.Model):
     word_id = models.ForeignKey("Word", related_name='first_word', on_delete=models.CASCADE)
