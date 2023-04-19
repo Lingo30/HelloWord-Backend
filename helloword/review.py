@@ -107,6 +107,7 @@ def get_blank_text(request):
         response['content'] = article
         response['wordList'] = wordlist
         response['answer'] = answer
+        response['originWords'] = words
 
 
     except Exception as e:
