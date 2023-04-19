@@ -80,22 +80,22 @@ class WordPhoto(models.Model):
 
 class WordsStory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    story = models.CharField(max_length=1023)
+    story = models.CharField(max_length=4096)
     answers = models.CharField(max_length=255)
 
 class WordsCloze(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    cloze = models.CharField(max_length=1023)
+    cloze = models.CharField(max_length=4096)
     answers = models.CharField(max_length=255)
 
 class ReadingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    input = models.CharField(max_length=1023)
+    input = models.CharField(max_length=4096)
     output = models.CharField(max_length=1023)
 
 class WritingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    input = models.CharField(max_length=1023)
+    input = models.CharField(max_length=4096)
     output = models.CharField(max_length=1023)
 
 class ChatHistory(models.Model):
