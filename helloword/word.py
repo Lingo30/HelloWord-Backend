@@ -95,11 +95,15 @@ def group_word_learn_save(request):
     data = json.loads(request.body.decode('utf-8'))
     user_id = data.get('user_id')
     ret_words = data.get('words')
+    list_id = data.get('list_id')
 
     new_head = 0
 
+    print(ret_words)
+
 
     try:
+        user_study = UserStudyList.objects.get(id = list_id)
         user = UserInfo.objects.get(id=user_id)
         for k in ret_words:
             word = Word.objects.get(id=k['word_id'])
@@ -113,8 +117,9 @@ def group_word_learn_save(request):
                     simple=k['simple']
                 )
                 new_studyinfo.save()
-                if new_studyinfo.word_id_id > new_head:
-                    new_head = new_studyinfo.word_id_id
+                t = UserStudyListItem.objects.filter(word_id_id=word,user_study_list_id=user_study)[0]
+                if t.id > new_head:
+                    new_head = t.id
             else :
                 f=studyinfo[0].forget_times
                 m=studyinfo[0].mastery_level
@@ -285,6 +290,7 @@ def get_group_words_in_list(request):
             ret.append(full)
 
         response['group_words']=ret
+        response['list_id']=userlist_obj.id
         response['state'] = True
 
     except Exception as e:
