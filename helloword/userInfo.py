@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
-from helloword.models import UserInfo, FileInfo
+from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,UserStudyList
 from pathlib import Path
 import sys
 import os
@@ -40,11 +40,15 @@ def submit_info(request):
     response = {}
     response['state'] = False
 
+
     try:
-
         data = json.loads(request.body.decode())
-        print(data.get('user_info'))
+        k=data.get('user_info')
+        user = UserInfo.objects.get(id=data.get('user_id'))
+        user.not_unique_name = k['name']
+        user.save()
 
+        response['state']=True
     except Exception as e:
         response['msg'] = str(e)
 
@@ -56,21 +60,30 @@ def submit_image(request):
     response = {}
     response['state'] = False
 
+    iid = int(str(request.FILES.get('user_id').read())[2:-1])
+    print(iid)
+
     try:
         file = request.FILES.get('img')
-        newfile = FileInfo(file_info=file)
-        newfile.save()
+        #newfile = FileInfo(file_info=file)
+        #newfile.save()
+        user_obj = UserInfo.objects.get(id=iid)
+        user_obj.user_avatar=file
+        user_obj.save()
 
-        src = 'media/' + str(newfile.file_info)
-        dst = '../backend_static/' + str(newfile.file_info)
+        src = 'media/' + str(user_obj.user_avatar)
+        dst = '../backend_static/' + str(user_obj.user_avatar)
         if copy(src, dst):
             print("复制文件成功!")
         else:
             print("复制文件失败!")
             response['msg'] = "复制文件失败!"
 
-        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(newfile.file_info),
+        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user_obj.user_avatar)
+
         response['state'] = True
+
+
     except Exception as e:
         response['msg'] = str(e)
 
@@ -170,7 +183,7 @@ with open('env.json') as env:
 
 def get_recommend_tags(request):
     response = {}
-    response['tags'] = ['test1', 'test2']
+    response['tags'] = ['TODO1', 'TODO2']
     return JsonResponse(response)
 
 
@@ -179,16 +192,19 @@ def get_user_info(request):
     response['state'] = False
     data = json.loads(request.body.decode())
     user_id = data.get('user_id')
+    user = UserInfo.objects.get(id=user_id)
 
     try:
+        de = 'http://' + str(ENV['HOST']) + ':9001/static/admin/img/search.svg'
         response['info'] = {
-            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/admin/img/search.svg',
-            'email': 'email',
-            'words': 100,
-            'name': 'name',
-            'days': 100,
-            'lists': 100,
-            'tags': ['11', '22']
+            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user.user_avatar) if user.user_avatar else de,
+            'email': user.email if user.email else '',
+            'words': UserStudyWordInfo.objects.filter(user_id_id=user).count(),
+            'name': user.not_unique_name if user.not_unique_name else '',
+            'days': user.study_days_count if user.study_days_count else 0,
+            'lists': 0,
+                #UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
+            'tags': ['TODO11', 'TODO22']
         }
         response['state'] = True
 
