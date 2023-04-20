@@ -40,11 +40,15 @@ def submit_info(request):
     response = {}
     response['state'] = False
 
+
     try:
-
         data = json.loads(request.body.decode())
-        print(data.get('user_info'))
+        k=data.get('user_info')
+        user = UserInfo.objects.get(id=data.get('user_id'))
+        user.not_unique_name = k['name']
+        user.save()
 
+        response['state']=True
     except Exception as e:
         response['msg'] = str(e)
 
@@ -179,7 +183,7 @@ with open('env.json') as env:
 
 def get_recommend_tags(request):
     response = {}
-    response['tags'] = ['test1', 'test2']
+    response['tags'] = ['TODO1', 'TODO2']
     return JsonResponse(response)
 
 
@@ -200,7 +204,7 @@ def get_user_info(request):
             'days': user.study_days_count if user.study_days_count else 0,
             'lists': 0,
                 #UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
-            'tags': ['11', '22']
+            'tags': ['TODO11', 'TODO22']
         }
         response['state'] = True
 
