@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
-from helloword.models import UserInfo, FileInfo
+from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,UserStudyList
 from pathlib import Path
 import sys
 import os
@@ -76,8 +76,6 @@ def submit_image(request):
             response['msg'] = "复制文件失败!"
 
         response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user_obj.user_avatar)
-
-
 
         response['state'] = True
 
@@ -190,15 +188,18 @@ def get_user_info(request):
     response['state'] = False
     data = json.loads(request.body.decode())
     user_id = data.get('user_id')
+    user = UserInfo.objects.get(id=user_id)
 
     try:
+        de = 'http://' + str(ENV['HOST']) + ':9001/static/admin/img/search.svg'
         response['info'] = {
-            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/admin/img/search.svg',
-            'email': 'email',
-            'words': 100,
-            'name': 'name',
-            'days': 100,
-            'lists': 100,
+            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user.user_avatar) if user.user_avatar else de,
+            'email': user.email if user.email else '',
+            'words': UserStudyWordInfo.objects.filter(user_id_id=user).count(),
+            'name': user.not_unique_name if user.not_unique_name else '',
+            'days': user.study_days_count if user.study_days_count else 0,
+            'lists': 0,
+                #UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
             'tags': ['11', '22']
         }
         response['state'] = True

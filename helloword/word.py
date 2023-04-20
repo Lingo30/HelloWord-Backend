@@ -183,6 +183,8 @@ def get_group_words_in_list(request):
 
         # 新单词全部背完; TODO 需要增加重置逻辑
         if len(new) == 0:
+            #userlist_obj.has_done
+            # TODO 修改model
             return JsonResponse(response)
 
         #print(new)
