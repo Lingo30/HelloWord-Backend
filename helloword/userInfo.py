@@ -69,8 +69,14 @@ def submit_image(request):
             print("复制文件失败!")
             response['msg'] = "复制文件失败!"
 
-        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(newfile.file_info),
+        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(newfile.file_info)
+
+        iid = int(str(request.FILES.get('user_id').read())[2:-1])
+        print(iid)
+
         response['state'] = True
+
+
     except Exception as e:
         response['msg'] = str(e)
 
