@@ -56,23 +56,28 @@ def submit_image(request):
     response = {}
     response['state'] = False
 
+    iid = int(str(request.FILES.get('user_id').read())[2:-1])
+    print(iid)
+
     try:
         file = request.FILES.get('img')
-        newfile = FileInfo(file_info=file)
-        newfile.save()
+        #newfile = FileInfo(file_info=file)
+        #newfile.save()
+        user_obj = UserInfo.objects.get(id=iid)
+        user_obj.user_avatar=file
+        user_obj.save()
 
-        src = 'media/' + str(newfile.file_info)
-        dst = '../backend_static/' + str(newfile.file_info)
+        src = 'media/' + str(user_obj.user_avatar)
+        dst = '../backend_static/' + str(user_obj.user_avatar)
         if copy(src, dst):
             print("复制文件成功!")
         else:
             print("复制文件失败!")
             response['msg'] = "复制文件失败!"
 
-        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(newfile.file_info)
+        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user_obj.user_avatar)
 
-        iid = int(str(request.FILES.get('user_id').read())[2:-1])
-        print(iid)
+
 
         response['state'] = True
 
