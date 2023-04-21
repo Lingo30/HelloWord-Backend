@@ -41,6 +41,7 @@ def get_today_words(request):
 
     return JsonResponse(response)
 
+# WordsStory
 def words_to_story(request):
     response = {}
     response['state'] = False
@@ -52,7 +53,7 @@ def words_to_story(request):
 
     try:
         if not words:
-            response['msg'] = '请选择单词！'
+            response['msg'] = '请背诵单词后，选择今日所学单词！'
             return JsonResponse(response)
         elif len(words)<3:
             response['msg'] = '请至少选择3个单词生成故事'
@@ -75,6 +76,7 @@ def words_to_story(request):
     return JsonResponse(response)
 
 # blank text
+# WordsCloze
 def get_blank_text(request):
     response = {}
     response['state'] = False
@@ -87,7 +89,7 @@ def get_blank_text(request):
         now_date = timezone.now().date()
         today_words = UserStudyWordInfo.objects.filter(user_id_id=user_id, last_reviewed=now_date).order_by('-forget_times')
         words = []
-        # TODO 测试阶段没有单词学习数据，所以随机给5个词，与学习部分对接后改为抛异常提示今日未学习单词
+
         if len(today_words) < 5:
             response['msg'] = '今日学习单词太少啦，先去背单词吧~'
             response['content'] = ''
@@ -111,6 +113,8 @@ def get_blank_text(request):
         article = cloze['content']
         answer = cloze['answer']
         wordlist = []
+
+        str_index=[]
         for word in answer:
             target = '$' + word + '$'
             start = article.index(target)
@@ -120,10 +124,17 @@ def get_blank_text(request):
                 'end': end
             }
             wordlist.append(cur)
+            str_index.append(start)
+            str_index.append(end)
         response['content'] = article
         response['wordList'] = wordlist
         response['answer'] = answer
         response['originWords'] = words
+
+        s1 = article
+        s2 = ' '.join(answer)
+        s3 = ' '.join(words)
+        s4 = ' '.join(str(i) for i in str_index)
 
 
     except Exception as e:
@@ -132,7 +143,7 @@ def get_blank_text(request):
 
     return JsonResponse(response)
 
-# writing
+# WritingHistory
 def writing_analysis(request):
     response = {}
     response['state'] = False
@@ -144,18 +155,23 @@ def writing_analysis(request):
 
     try:
         message = writing.analyze_essay(user_article)
-        output = client.Clinet().send_message(message)
-        output = json.loads(output)
+        outputk = client.Clinet().send_message(message)
+        output = json.loads(outputk)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
         response['state'] = True
         print(output)
+
+        s1 = user_article
+        s2 = outputk
+
     except Exception as e:
         response['msg'] = str(e)
 
     return JsonResponse(response)
 
+# ReadingHistory
 def sentence_analysis(request):
     response = {}
     response['state'] = False
@@ -168,8 +184,8 @@ def sentence_analysis(request):
     try:
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
         message = reading.analyze_sentence_alone(user_sentence)
-        output = client.Clinet().send_message(message)
-        output = json.loads(output)
+        outputk = client.Clinet().send_message(message)
+        output = json.loads(outputk)
         translation = output['content']
         structure = output['structure']
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
@@ -178,6 +194,10 @@ def sentence_analysis(request):
         response['structure'] = structure
         response['state'] = True
         response['msg'] = 'success'
+
+        s1 = user_sentence
+        s2 = outputk
+
     except Exception as e:
         response['msg'] = str(e)
 
