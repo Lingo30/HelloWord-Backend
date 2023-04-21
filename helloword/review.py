@@ -30,6 +30,9 @@ def get_today_words(request):
                 'word': this_word.word
             }
             words.append(cur)
+        if len(words) < 5:
+            response['msg'] = '今日学习单词太少啦，先去背单词吧~'
+            return JsonResponse(response)
         response['today_words'] = words
         response['state'] = True
         response['msg'] = 'success'
@@ -50,6 +53,13 @@ def words_to_story(request):
     try:
         if not words:
             response['msg'] = '请选择单词！'
+            return JsonResponse(response)
+        elif len(words)<3:
+            response['msg'] = '请至少选择3个单词生成故事'
+            return JsonResponse(response)
+        elif len(words)>6:
+            response['msg'] = '至多选择6个单词生成故事'
+            return JsonResponse(response)
         else:
             message = vocabulary.gen_story_from_words(words)
             story = client.Clinet().send_message(message)
@@ -79,8 +89,15 @@ def get_blank_text(request):
         words = []
         # TODO 测试阶段没有单词学习数据，所以随机给5个词，与学习部分对接后改为抛异常提示今日未学习单词
         if len(today_words) < 5:
-            words = ['assign', 'involve', 'skeleton', 'uncover', 'entertainment']
-            response['state'] = True
+            response['msg'] = '今日学习单词太少啦，先去背单词吧~'
+            response['content'] = ''
+            response['wordList'] = []
+            response['answer'] = []
+            response['originWords'] = []
+            return JsonResponse(response)
+
+            #words = ['assign', 'involve', 'skeleton', 'uncover', 'entertainment']
+            #response['state'] = True
             # response['msg'] = 'please begin today's study'
         else:
             for i in range(5):
