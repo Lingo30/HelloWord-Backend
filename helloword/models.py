@@ -58,13 +58,13 @@ class UserStudyList(models.Model):
     head = models.IntegerField(null=True, default=0)
 
     list_author = models.ForeignKey("UserInfo", related_name='create',null=True, on_delete=models.SET_NULL)
-
+    has_done = models.BooleanField(null=True, default=False)
 
 class UserStudyListItem(models.Model):
     user_study_list_id = models.ForeignKey("UserStudyList", on_delete=models.CASCADE)
     word_id = models.ForeignKey("Word", on_delete=models.CASCADE)
 
-    has_done = models.BooleanField(null=True, default=False)
+
 
 class WordRelation(models.Model):
     word_id = models.ForeignKey("Word", related_name='first_word', on_delete=models.CASCADE)
@@ -90,20 +90,33 @@ class WordsStory(models.Model):
     story = models.CharField(max_length=4096)
     answers = models.CharField(max_length=255)
 
+    post_time = models.DateTimeField(auto_now=True, null=True)
+
 class WordsCloze(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     cloze = models.CharField(max_length=4096)
     answers = models.CharField(max_length=255)
+
+    words = models.CharField(max_length=255,null=True)
+    eordlist = models.CharField(max_length=255,null=True)
+
+    post_time = models.DateTimeField(auto_now=True, null=True)
+
+
 
 class ReadingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     input = models.CharField(max_length=4096)
     output = models.CharField(max_length=1023)
 
+    post_time = models.DateTimeField(auto_now=True, null=True)
+
 class WritingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     input = models.CharField(max_length=4096)
     output = models.CharField(max_length=1023)
+
+    post_time = models.DateTimeField(auto_now=True, null=True)
 
 class ChatHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
