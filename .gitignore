@@ -12,3 +12,6 @@ test.py
 */*/__pycache__
 /media
 */user_file
+local/
+dict/
+import.py

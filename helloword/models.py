@@ -16,11 +16,18 @@ class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")
 
 class Word(models.Model):
-    word = models.CharField(max_length=32)
-    phonetic_symbol = models.CharField(max_length=32)
-    definition_cn = models.CharField(max_length=64)
-    definition_en = models.CharField(max_length=255, null=True)
-    pronunciation_path = models.CharField(max_length=64, null=True)
+    word = models.CharField(max_length=64, unique=True)
+    phonetic_symbol = models.CharField(max_length=64)
+    definition_cn = models.CharField(max_length=2048)
+    definition_en = models.CharField(max_length=2048, null=True)
+    pronunciation_path = models.CharField(max_length=128, null=True)
+    pos = models.CharField(max_length=32, null=True)
+    tag = models.CharField(max_length=32, null=True)
+    collins = models.IntegerField(null=True, default=0)
+    oxford = models.IntegerField(null=True, default=0)
+    bnc = models.IntegerField(null=True, default=0)
+    frq = models.IntegerField(null=True, default=0)
+    exchange = models.CharField(max_length=128, null=True)
 
 class WordList(models.Model):
     list_name = models.CharField(max_length=64)
