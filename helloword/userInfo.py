@@ -106,7 +106,8 @@ def login(request):
                 response['state'] = True
                 response['data'] = {
                     'uid': userInfo[0].id,
-                    'wordNum': userInfo[0].daily_words_count
+                    'wordNum': userInfo[0].daily_words_count,
+                    'selectWordlist': userInfo[0].last_study_list.id
                 }
             else:
                 response['msg'] = '密码错误'
@@ -133,13 +134,15 @@ def register(request):
     try:
         userInfo = UserInfo.objects.filter(username=newname)
         if userInfo.count() == 0:
+
             userInfo = UserInfo(username=data.get('name'),
                                 password_hash=data.get('password'))
             userInfo.save()
             response['state'] = True
             response['data'] = {
                 'uid': userInfo.id,
-                'wordNum': userInfo.daily_words_count
+                'wordNum': userInfo.daily_words_count,
+                'selectWordlist': userInfo.last_study_list.id
             }
 
         else:
