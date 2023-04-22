@@ -72,7 +72,8 @@ class WordRelation(models.Model):
     relation_type = models.CharField(max_length=10)
 
 class Example(models.Model):
-    example_sentence = models.CharField(max_length=255)
+    example_sentence = models.CharField(max_length=2048, default="")
+    example_translation = models.CharField(max_length=2048, default="")
 
 class WordExample(models.Model):
     word_id = models.ForeignKey("Word", on_delete=models.CASCADE)
