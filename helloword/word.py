@@ -200,7 +200,7 @@ def get_group_words_in_list(request):
         #print(review_list)
         info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
         #print(info_list)
-        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today())
+        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()-datetime.timedelta(days=1))
         #print(act)
         act = []
         for m in acttmp:

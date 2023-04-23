@@ -18,7 +18,7 @@ def add_feedback(request):
         modules = data.get('modules')
         content = data.get('content')
 
-        today_feedback = Feedback.objects.filter(user_id=user,post_time__gte=datetime.date.today())
+        today_feedback = Feedback.objects.filter(user_id=user,post_time__gte=datetime.date.today()-datetime.timedelta(days=1))
         if today_feedback.count()>3:
             response['msg'] = '今天的反馈已经收到啦~明天再来吧'
 
