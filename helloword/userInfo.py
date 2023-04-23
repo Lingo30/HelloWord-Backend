@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
-from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,UserStudyList
+from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo
+from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 from pathlib import Path
 import sys
 import os
@@ -147,6 +148,21 @@ def register(request):
 
         else:
             response['msg'] = '用户名重复'
+
+        to_add = UserStudyList(
+            user_id=userInfo,
+            list_name='新用户词单'
+        )
+        to_add.save()
+
+        public = WordList.objects.get(id=1)
+        words = WordListItem.objects.filter(word_list_id_id=public)
+        for i in words:
+            add_to_list = UserStudyListItem(
+                user_study_list_id=to_add,
+                word_id=i.word_id
+            )
+            add_to_list.save()
 
     except Exception as e:
         response['msg'] = str(e)
