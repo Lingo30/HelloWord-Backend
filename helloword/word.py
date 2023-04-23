@@ -204,8 +204,11 @@ def get_group_words_in_list(request):
         #print(review_list)
         info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
         #print(info_list)
-        act = list(info_list.exclude(last_reviewed__gte=datetime.date.today()+datetime.timedelta(days=1)).values_list('id', flat=True))
+        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()+datetime.timedelta(days=1))
         #print(act)
+        act = []
+        for m in acttmp:
+            act.append(m.word_id.id)
 
         if(len(act)<size):
             newlist = UserStudyListItem.objects.filter(user_study_list_id=userlist_obj).filter(id__gt=new_head).order_by('id')
