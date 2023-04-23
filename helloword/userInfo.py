@@ -141,10 +141,7 @@ def register(request):
                                 password_hash=data.get('password'))
             userInfo.save()
             response['state'] = True
-            response['data'] = {
-                'uid': userInfo.id,
-                'wordNum': userInfo.daily_words_count
-            }
+
 
         else:
             response['msg'] = '用户名重复'
@@ -166,6 +163,11 @@ def register(request):
 
         userInfo.last_study_list = to_add
         userInfo.save()
+        response['data'] = {
+            'uid': userInfo.id,
+            'wordNum': userInfo.daily_words_count,
+            'selectWordlist': userInfo.last_study_list.id
+        }
 
     except Exception as e:
         response['msg'] = str(e)
