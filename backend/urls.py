@@ -27,6 +27,7 @@ from django.conf import settings
 from django.views.static import serve
 from helloword import chat as chatview
 from helloword import review as reviewview
+from helloword import feedback as feedbackview
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -87,6 +88,8 @@ urlpatterns = [
     path("words_to_story/", reviewview.words_to_story),
     # writing
     path("writing_analysis/", reviewview.writing_analysis),
-    path("sentence_analysis/", reviewview.sentence_analysis)
+    path("sentence_analysis/", reviewview.sentence_analysis),
+
+    path("add_feedback/",feedbackview.add_feedback),
 
 ]
