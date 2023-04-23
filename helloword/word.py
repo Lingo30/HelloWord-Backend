@@ -188,14 +188,10 @@ def get_group_words_in_list(request):
 
         # 新单词全部背完; TODO 需要增加重置逻辑
         if len(new) == 0:
-            #userlist_obj.has_done
-            # TODO 修改model
             if not userlist_obj.has_done:
                 userlist_obj.has_done=True
                 userlist_obj.save()
             return JsonResponse(response)
-
-        #print(new)
 
         review = []
         size = 10-len(new)
@@ -204,7 +200,7 @@ def get_group_words_in_list(request):
         #print(review_list)
         info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
         #print(info_list)
-        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()+datetime.timedelta(days=1))
+        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today())
         #print(act)
         act = []
         for m in acttmp:
