@@ -12,7 +12,7 @@ class UserInfo(models.Model):
     study_days_count = models.IntegerField(null=True,default=0)
     not_unique_name = models.CharField(max_length=64,null=True)
 
-    tags = models.CharField(max_length=2048,null=True)
+    tags = models.CharField(max_length=2048,null=True,default='音乐 电影')
 
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")

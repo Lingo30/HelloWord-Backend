@@ -190,6 +190,9 @@ def get_group_words_in_list(request):
         if len(new) == 0:
             #userlist_obj.has_done
             # TODO 修改model
+            if not userlist_obj.has_done:
+                userlist_obj.has_done=True
+                userlist_obj.save()
             return JsonResponse(response)
 
         #print(new)

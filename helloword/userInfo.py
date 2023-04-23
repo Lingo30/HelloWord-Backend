@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo
-from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
+from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,UserStudyWordInfo
 from pathlib import Path
 import sys
 import os
@@ -47,6 +47,7 @@ def submit_info(request):
         k=data.get('user_info')
         user = UserInfo.objects.get(id=data.get('user_id'))
         user.not_unique_name = k['name']
+        user.tags = ' '.join(k['tags'])
         user.save()
 
         response['state']=True
@@ -204,7 +205,7 @@ with open('env.json') as env:
 
 def get_recommend_tags(request):
     response = {}
-    response['tags'] = ['TODO1', 'TODO2']
+    response['tags'] = ['演讲', '运动', '旅行']
     return JsonResponse(response)
 
 
@@ -216,16 +217,14 @@ def get_user_info(request):
     user = UserInfo.objects.get(id=user_id)
 
     try:
-        de = 'http://' + str(ENV['HOST']) + ':9001/static/admin/img/search.svg'
         response['info'] = {
-            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user.user_avatar) if user.user_avatar else de,
+            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user.user_avatar),
             'email': user.email if user.email else '',
             'words': UserStudyWordInfo.objects.filter(user_id_id=user).count(),
             'name': user.not_unique_name if user.not_unique_name else '',
             'days': user.study_days_count if user.study_days_count else 0,
-            'lists': 0,
-                #UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
-            'tags': ['TODO11', 'TODO22']
+            'lists': UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
+            'tags': user.tags.split(" ")
         }
         response['state'] = True
 
