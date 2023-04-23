@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-from helloword.models import Word,UserInfo,Example,WordExample,WordRelation
+from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 
 def add_relation(request):
@@ -172,6 +172,64 @@ def add_word(request):
 
         response['msg'] = data
         response['state']=True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
+def file_to_public(request):
+    response = {}
+    response['state'] = False
+
+    newListName = '新用户词单'
+
+    try:
+        file = request.FILES.get('file')
+        newfile = FileInfo(file_info=file)
+        newfile.save()
+
+        filepath = 'media/' + str(newfile.file_info)
+        contents = open(filepath, 'r').read()
+        print(contents)
+        words = []
+
+        oneword = ''
+
+        for c in contents:
+            if c.isalpha():
+                oneword += c
+            else:
+                if len(oneword) > 0:
+                    words.append(oneword.lower())
+                oneword = ''
+
+        print(words)
+        response['words'] = words
+
+        ret = []
+        word_list = Word.objects.filter(word__in=words)
+        if word_list.count() == 0:
+            response['msg'] = '输入文件不包含有效单词'
+            return JsonResponse(response)
+
+        to_add = WordList(
+            list_name=newListName,
+            list_author_name='HelloWord团队',
+            description='平台新用户初始化词单',
+            gen_type='0'
+        )
+        to_add.save()
+
+        for k in word_list:
+            add_to_list = WordListItem(
+                word_list_id=WordList.objects.get(id=to_add.id),
+                word_id=k
+            )
+            add_to_list.save()
+
+        response['state'] = True
 
     except Exception as e:
         response['msg'] = str(e)
