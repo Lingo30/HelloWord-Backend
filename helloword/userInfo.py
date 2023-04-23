@@ -142,8 +142,7 @@ def register(request):
             response['state'] = True
             response['data'] = {
                 'uid': userInfo.id,
-                'wordNum': userInfo.daily_words_count,
-                'selectWordlist': userInfo.last_study_list.id
+                'wordNum': userInfo.daily_words_count
             }
 
         else:
@@ -163,6 +162,9 @@ def register(request):
                 word_id=i.word_id
             )
             add_to_list.save()
+
+        userInfo.last_study_list = to_add
+        userInfo.save()
 
     except Exception as e:
         response['msg'] = str(e)
