@@ -12,6 +12,8 @@ class UserInfo(models.Model):
     study_days_count = models.IntegerField(null=True,default=0)
     not_unique_name = models.CharField(max_length=64,null=True)
 
+    tags = models.CharField(max_length=2048,null=True)
+
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")
 
@@ -123,4 +125,11 @@ class ChatHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     message = models.CharField(max_length=512, null=True)
     type = models.BooleanField(null=True)
+    post_time = models.DateTimeField(auto_now=True, null=True)
+
+class Feedback(models.Model):
+    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    type = models.CharField(max_length=64,default="")
+    modules = models.CharField(max_length=512,default="")
+    content = models.CharField(max_length=1024)
     post_time = models.DateTimeField(auto_now=True, null=True)
