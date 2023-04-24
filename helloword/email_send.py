@@ -85,12 +85,19 @@ def send_email_code(request):
     try:
         data = json.loads(request.body.decode())
         email_addr = data.get('email_addr')
+        t = EmailToken.objects.filter(email_addr=email_addr)
+        if t.count()!=0:
+            email_token=t[0]
+            if email_token.has_register:
+                response['msg'] = '该邮箱已注册'
+                return JsonResponse(response)
+
         try:
             code = send(email_addr)
         except Exception as e:
             response['msg'] = '邮件格式错误 请重试'
             return JsonResponse(response)
-        t=EmailToken.objects.filter(email_addr=email_addr)
+
         if t.count()!=0:
             email_token=t[0]
             email_token.token=code
@@ -120,10 +127,17 @@ def check_email_code(request):
         if t.count()!=0:
 
             email_token=t[0]
+            if email_token.has_register:
+                response['msg']='该邮箱已注册'
+                return JsonResponse(response)
+
             if datetime.datetime.now()-email_token.gen_time>datetime.timedelta(minutes=20):
                 response['msg']='注册码已失效，请重试'
                 return JsonResponse(response)
+
             response['state']=True
+            email_token.has_register=True
+            email_token.save()
         else:
             response['msg'] = '邮箱验证码错误'
             return JsonResponse(response)
