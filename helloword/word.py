@@ -52,14 +52,16 @@ def get_word_releation(request):
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 synonyms_list.append(cur)
             elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 antonyms_list.append(cur)
 
@@ -69,14 +71,16 @@ def get_word_releation(request):
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
+                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 synonyms_list.append(cur)
             elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
+                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 antonyms_list.append(cur)
 

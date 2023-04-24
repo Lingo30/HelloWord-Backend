@@ -69,6 +69,7 @@ def words_to_story(request):
             times_left = dailly_times-WordsStory.objects.filter(user_id_id = user_obj,post_time__gte=datetime.date.today()).count()
             if times_left==0:
                 response['msg'] = '今天的故事模式次数已经用完啦！明天再来吧'
+                response['last_times'] = 0
                 return JsonResponse(response)
 
             message = vocabulary.gen_story_from_words(words)
@@ -107,6 +108,7 @@ def get_blank_text(request):
                                                               post_time__gte=datetime.date.today()).count()
         if times_left == 0:
             response['msg'] = '今天的完形填空次数已经用完啦！明天再来吧'
+            response['last_times'] = 0
             return JsonResponse(response)
 
         #
@@ -199,6 +201,7 @@ def writing_analysis(request):
                                                               post_time__gte=datetime.date.today()).count()
         if times_left == 0:
             response['msg'] = '今天的作文分析次数已经用完啦！明天再来吧'
+            response['last_times'] = 0
             return JsonResponse(response)
 
         message = writing.analyze_essay(user_article)
@@ -250,6 +253,7 @@ def sentence_analysis(request):
                                                               post_time__gte=datetime.date.today()).count()
         if times_left == 0:
             response['msg'] = '今天的长难句分析次数已经用完啦！明天再来吧'
+            response['last_times'] = 0
             return JsonResponse(response)
 
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
