@@ -52,14 +52,14 @@ def get_word_releation(request):
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                 }
                 synonyms_list.append(cur)
             elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                 }
                 antonyms_list.append(cur)
 
@@ -69,14 +69,14 @@ def get_word_releation(request):
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn
+                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                 }
                 synonyms_list.append(cur)
             elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn
+                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                 }
                 antonyms_list.append(cur)
 
@@ -236,8 +236,8 @@ def get_group_words_in_list(request):
                 'id': fetchword.id,
                 'word': fetchword.word,
                 'phonetic_symbol': fetchword.phonetic_symbol,
-                'definition_cn': fetchword.definition_cn,
-                'definition_en': fetchword.definition_en,
+                'definition_cn': fetchword.definition_cn.replace("\\n","\n").replace("\\r",""),
+                'definition_en': fetchword.definition_en.replace("\\n","\n").replace("\\r",""),
                 'word_id': fetchword.id,
             }
 
@@ -258,14 +258,14 @@ def get_group_words_in_list(request):
                     cur = {
                         'word_id': k.related_word_id.id,
                         'word': k.related_word_id.word,
-                        'definition_cn': k.related_word_id.definition_cn
+                        'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     synonyms_list.append(cur)
                 elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                     cur = {
                         'word_id': k.related_word_id.id,
                         'word': k.related_word_id.word,
-                        'definition_cn': k.related_word_id.definition_cn
+                        'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     antonyms_list.append(cur)
 
@@ -275,14 +275,14 @@ def get_group_words_in_list(request):
                     cur = {
                         'word_id': k.word_id.id,
                         'word': k.word_id.word,
-                        'definition_cn': k.word_id.definition_cn
+                        'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     synonyms_list.append(cur)
                 elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                     cur = {
                         'word_id': k.word_id.id,
                         'word': k.word_id.word,
-                        'definition_cn': k.word_id.definition_cn
+                        'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     antonyms_list.append(cur)
 

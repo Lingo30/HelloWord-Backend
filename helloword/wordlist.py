@@ -122,8 +122,6 @@ def get_words_info(request):
                 'meaning': fetchword.definition_cn.replace("\\n","\n").replace("\\r","")
             }
             ret.append(cur)
-            print(fetchword.definition_cn)
-            print(fetchword.definition_cn.replace("\\n","\n").replace("\\r",""))
 
         response['words']=ret
         response['state'] = True
@@ -282,7 +280,7 @@ def get_wordList_from_file(request):
             cur = {
                 'wordId':k.id,
                 'word':k.word,
-                'meaning':k.definition_cn
+                'meaning':k.definition_cn.replace("\\n","\n").replace("\\r","")
             }
             ret.append(cur)
 
