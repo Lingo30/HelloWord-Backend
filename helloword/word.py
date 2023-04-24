@@ -46,14 +46,14 @@ def get_word_releation(request):
 
         word_relation_objs = WordRelation.objects.filter(word_id_id=base_word)
         for k in word_relation_objs:
-            if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
                     'definition_cn': k.related_word_id.definition_cn
                 }
                 synonyms_list.append(cur)
-            elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
@@ -63,14 +63,14 @@ def get_word_releation(request):
 
         word_relation_objs = WordRelation.objects.filter(related_word_id_id=base_word)
         for k in word_relation_objs:
-            if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
                     'definition_cn': k.word_id.definition_cn
                 }
                 synonyms_list.append(cur)
-            elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
@@ -245,21 +245,21 @@ def get_group_words_in_list(request):
             example_objs = WordExample.objects.filter(word_id_id=base_word)
             if example_objs.count() > 0:
                 # TODO 补充例句返回逻辑 现在返回首个例句
-                example_sen = example_objs[0].example_id.example_sentence
+                example_sen = example_objs[0].example_id.example_sentence + example_objs[0].example_id.example_translation
 
             synonyms_list = []
             antonyms_list = []
 
             word_relation_objs = WordRelation.objects.filter(word_id_id=base_word)
             for k in word_relation_objs:
-                if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+                if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                     cur = {
                         'word_id': k.related_word_id.id,
                         'word': k.related_word_id.word,
                         'definition_cn': k.related_word_id.definition_cn
                     }
                     synonyms_list.append(cur)
-                elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+                elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                     cur = {
                         'word_id': k.related_word_id.id,
                         'word': k.related_word_id.word,
@@ -269,14 +269,14 @@ def get_group_words_in_list(request):
 
             word_relation_objs = WordRelation.objects.filter(related_word_id_id=base_word)
             for k in word_relation_objs:
-                if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+                if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                     cur = {
                         'word_id': k.word_id.id,
                         'word': k.word_id.word,
                         'definition_cn': k.word_id.definition_cn
                     }
                     synonyms_list.append(cur)
-                elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+                elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                     cur = {
                         'word_id': k.word_id.id,
                         'word': k.word_id.word,
