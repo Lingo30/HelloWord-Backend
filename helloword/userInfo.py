@@ -145,6 +145,7 @@ def register(request):
 
         else:
             response['msg'] = '用户名重复'
+            return JsonResponse(response)
 
         to_add = UserStudyList(
             user_id=userInfo,
