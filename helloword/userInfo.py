@@ -130,6 +130,7 @@ def register(request):
     data = json.loads(request.body.decode())
 
     newname = data.get('name')
+    #email_addr = data.get('email_addr')
     if newname == '':
         response['msg'] = '用户名不能为空'
 
