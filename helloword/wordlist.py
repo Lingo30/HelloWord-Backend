@@ -119,9 +119,12 @@ def get_words_info(request):
                 'wordId': fetchword.id,
                 'word': fetchword.word,
                 'symbol': fetchword.phonetic_symbol,
-                'meaning': fetchword.definition_cn
+                'meaning': fetchword.definition_cn.replace("\\n","\n").replace("\\r","")
             }
             ret.append(cur)
+            print(fetchword.definition_cn)
+            print(fetchword.definition_cn.replace("\\n","\n").replace("\\r",""))
+
         response['words']=ret
         response['state'] = True
 
