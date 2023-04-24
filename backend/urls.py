@@ -54,12 +54,14 @@ urlpatterns = [
     path("get_wordlists/",listview.get_wordlists),
     path("get_official_wordlists/",listview.get_official_wordlists),
     path("get_wordList_from_file/",listview.get_wordList_from_file),
+    path("get_today_learned_words_sum/",listview.get_today_learned_words_sum),
 
 
     path("update_learn_wordlist/", listview.update_learn_wordlist),
     path("add_wordlist_from_official/", listview.add_wordlist_from_official),
     path("get_wordList_from_file/",listview.get_wordList_from_file),
     path("add_wordlist_from_file/",listview.add_wordlist_from_file),
+    path("set_daily_num/",listview.set_daily_num),
 
     # learn word
     path("get_word_releation/", wordview.get_word_releation),
