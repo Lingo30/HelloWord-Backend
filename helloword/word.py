@@ -37,9 +37,11 @@ def get_word_releation(request):
 
         example_sen='暂无例句'
         example_objs = WordExample.objects.filter(word_id_id=base_word)
-        if example_objs.count()>0:
+        example_count = example_objs.count()
+        if example_count>0:
             # TODO
-            example_sen=example_objs[0].example_id.example_sentence
+            p=random.randint(0,example_count-1)
+            example_sen = example_objs[p].example_id.example_sentence + example_objs[p].example_id.example_translation
 
         synonyms_list=[]
         antonyms_list=[]
@@ -246,8 +248,6 @@ def get_group_words_in_list(request):
             if example_objs.count() > 0:
                 # TODO 补充例句返回逻辑 现在返回首个例句
                 example_sen = example_objs[0].example_id.example_sentence + example_objs[0].example_id.example_translation
-                print(example_sen)
-                print(example_objs[0].example_id.example_translation)
 
             synonyms_list = []
             antonyms_list = []
