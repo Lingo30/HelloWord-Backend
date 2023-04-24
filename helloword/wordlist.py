@@ -295,7 +295,9 @@ def get_wordList_from_file(request):
                     words.append(oneword.lower())
                 oneword = ''
 
-        print(words)
+        if len(oneword) > 0:
+            words.append(oneword.lower())
+
         response['words']=words
 
         ret = []
