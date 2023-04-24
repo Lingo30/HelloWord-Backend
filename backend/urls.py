@@ -28,6 +28,7 @@ from django.views.static import serve
 from helloword import chat as chatview
 from helloword import review as reviewview
 from helloword import feedback as feedbackview
+from helloword import email_send as emailview
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -45,6 +46,8 @@ urlpatterns = [
     path("get_user_info/",userview.get_user_info),
     path("get_recommend_tags/",userview.get_recommend_tags),
     path("submit_info/",userview.submit_info),
+    path("check_email_code/",emailview.check_email_code),
+    path("send_email_code/",emailview.send_email_code),
 
     # wordlist
     path("get_user_wordlists/",listview.get_user_wordlists),
