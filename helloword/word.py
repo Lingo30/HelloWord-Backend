@@ -200,7 +200,7 @@ def get_group_words_in_list(request):
         #print(review_list)
         info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
         #print(info_list)
-        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today())
+        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()).exclude(simple=True)
         #print(act)
         act = []
         for m in acttmp:
@@ -246,6 +246,8 @@ def get_group_words_in_list(request):
             if example_objs.count() > 0:
                 # TODO 补充例句返回逻辑 现在返回首个例句
                 example_sen = example_objs[0].example_id.example_sentence + example_objs[0].example_id.example_translation
+                print(example_sen)
+                print(example_objs[0].example_id.example_translation)
 
             synonyms_list = []
             antonyms_list = []
