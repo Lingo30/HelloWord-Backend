@@ -130,7 +130,7 @@ def register(request):
     data = json.loads(request.body.decode())
 
     newname = data.get('name')
-    #email_addr = data.get('email_addr')
+    email_addr = data.get('email')
     if newname == '':
         response['msg'] = '用户名不能为空'
 
@@ -139,6 +139,7 @@ def register(request):
         if userInfo.count() == 0:
 
             userInfo = UserInfo(username=data.get('name'),
+                                email_addr=email_addr,
                                 password_hash=data.get('password'))
             userInfo.save()
             response['state'] = True
