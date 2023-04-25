@@ -131,6 +131,8 @@ def register(request):
 
     newname = data.get('name')
     email_addr = data.get('email')
+    print('email')
+    print(email_addr)
     if newname == '':
         response['msg'] = '用户名不能为空'
 
