@@ -37,6 +37,8 @@ def get_today_words(request):
             words.append(cur)
         if len(words) < 5:
             response['msg'] = '今日学习单词太少啦，先去背单词吧~'
+            response['today_words']=words
+            response['state'] = True
             return JsonResponse(response)
         response['today_words'] = words
         response['state'] = True
