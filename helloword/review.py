@@ -238,8 +238,8 @@ def writing_analysis(request):
         if output == None:
             response['msg'] = '解析失败，请重新输入'
             return JsonResponse(response)
-        
-        #output = json.loads(output)
+
+        output = json.loads(outputk)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
