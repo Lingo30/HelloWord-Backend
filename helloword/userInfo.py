@@ -139,7 +139,7 @@ def register(request):
         if userInfo.count() == 0:
 
             userInfo = UserInfo(username=data.get('name'),
-                                email_addr=email_addr,
+                                email=email_addr,
                                 password_hash=data.get('password'))
             userInfo.save()
             response['state'] = True
