@@ -61,7 +61,8 @@ def get_log_history(request):
 
     user_id = data.get('user_id')
     try:
-        log_history = ChatHistory.objects.filter(user_id_id=user_id)
+        user_obj=UserInfo.objects.get(id=user_id)
+        log_history = ChatHistory.objects.filter(user_id_id=user_obj)
         history = []
         for item in log_history:
             cur = {
