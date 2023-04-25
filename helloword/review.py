@@ -12,6 +12,8 @@ from helloword.models import WordsStory,WordsCloze,WritingHistory,ReadingHistory
 from helloword.models import WritingHistory
 from chatgpt import client
 from chatgpt.tools import vocabulary, reading, writing, utils
+import re
+dailly_times = 3
 
 # story
 def get_today_words(request):
