@@ -11,9 +11,8 @@ from helloword.models import Word,UserInfo
 from helloword.models import WordsStory,WordsCloze,WritingHistory,ReadingHistory
 from helloword.models import WritingHistory
 from chatgpt import client
-from chatgpt.tools import vocabulary, reading, writing
-import re
-dailly_times = 3
+from chatgpt.tools import vocabulary, reading, writing, utils
+
 # story
 def get_today_words(request):
     response = {}
@@ -142,9 +141,19 @@ def get_blank_text(request):
         print(word)
 
         message = vocabulary.gen_cloze_from_words(words)
-        cloze = client.Clinet().send_message(message)
-
-        cloze = json.loads(cloze)
+        outputk = client.Clinet().send_message(message)
+        
+        output = utils.extract_json(outputk)
+        # 如果解析结果为None，则重新执行一次
+        if output == None:
+            outputk = client.Clinet().send_message(message)
+            output = utils.extract_json(outputk)
+        # 如果结果还为None，则返回错误信息
+        if output == None:
+            response['msg'] = '解析失败，请重新输入'
+            return JsonResponse(response)
+        
+        cloze = json.loads(output)
         article = cloze['content']
         answer = cloze['answer']
         wordlist = []
@@ -216,7 +225,17 @@ def writing_analysis(request):
 
         message = writing.analyze_essay(user_article)
         outputk = client.Clinet().send_message(message)
-        output = json.loads(outputk)
+        output = utils.extract_json(outputk)
+        # 如果解析结果为None，则重新执行一次
+        if output == None:
+            outputk = client.Clinet().send_message(message)
+            output = utils.extract_json(outputk)
+        # 如果结果还为None，则返回错误信息
+        if output == None:
+            response['msg'] = '解析失败，请重新输入'
+            return JsonResponse(response)
+        
+        output = json.loads(output)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
         response['comment'] = output
@@ -269,7 +288,17 @@ def sentence_analysis(request):
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
         message = reading.analyze_sentence_alone(user_sentence)
         outputk = client.Clinet().send_message(message)
-        output = json.loads(outputk)
+        output = utils.extract_json(outputk)
+        # 如果解析结果为None，则重新执行一次
+        if output == None:
+            outputk = client.Clinet().send_message(message)
+            output = utils.extract_json(outputk)
+        # 如果结果还为None，则返回错误信息
+        if output == None:
+            response['msg'] = '解析失败，请重新输入'
+            return JsonResponse(response)
+        
+        output = json.loads(output)
         translation = output['content']
         structure = output['structure']
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)

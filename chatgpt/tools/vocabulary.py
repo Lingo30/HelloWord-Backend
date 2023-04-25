@@ -16,14 +16,15 @@ def gen_story_from_words(words, tags=None):
 
 def gen_cloze_from_words(words, tags=None):
     tags_prompt = "; ".join(tags) if tags else "None"
-    input_prompt = 'As an English learning assistant, your task is to create a cloze test that aids users in learning the input words. The input format is: [word1, word2, ...]. Each word should be utilized in the cloze test and enclosed in the "$" character at both the beginning and end. Please also provide the answer to the cloze test.\nOutput format: {"content": cloze_test, "answer": [answer1, answer2, ...]}\nProvide your response in JSON format, with two keys: "content" and "answer". The value for "content" should include the cloze test with input words enclosed in “$”. The value for "answer" should be a list containing answer words for all clozes in sequence.\nRemember to incorporate context clues or hints within the text to assist users with unfamiliar vocabulary. Additionally, ensure your cloze test adheres to proper grammar and sentence structure.'
+    input_prompt = 'As an English learning assistant, your task is to create a cloze test that aids users in learning the input words. The input format is: [word1, word2, ...]. Each word should be utilized in the cloze test only once and shoulde be enclosed in the "$" character at both the beginning and end. Please also provide the answer to the cloze test.\nOutput format must be in JSON format: {"content": cloze_test, "answer": [answer1, answer2, ...]}\nProvide your response in JSON format, with two keys: "content" and "answer". The value for "content" should include the cloze test and each used input words should be enclosed in “$”. The value for "answer" should be a list containing answer words for all clozes in sequence.\nRemember to incorporate context clues or hints within the text to assist users with unfamiliar vocabulary. Additionally, ensure your cloze test adheres to proper grammar and sentence structure.'
     if tags:
         input_prompt = input_prompt + ' ' + 'Create the test within the themes of: ' + tags_prompt + ', and it must include all the provided input words.\n'
     else:
         input_prompt = input_prompt + ' ' + 'You can choose any genre or theme for the content of cloze test, but it must include all the provided input words.\n'
-    words_prompt = "[" + ", ".join(words) + "]" + "INPUT END"
+    words_prompt = "[" + ", ".join(words) + "]" + "INPUT END\n"
+    format_prompt = 'Very Important!!! Your response should be in JSON format: {"content": cloze_test, "answer": [answer1, answer2, ...]}'
     messages = [
-        {"role": "user", "content": input_prompt + "Input words: " + words_prompt},
+        {"role": "user", "content": input_prompt + "Input words: " + words_prompt + format_prompt},
     ]
     return messages
 
