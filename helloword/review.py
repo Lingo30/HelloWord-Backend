@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
@@ -106,23 +108,22 @@ def get_blank_text(request):
         user_obj = UserInfo.objects.get(id=user_id)
         times_left = dailly_times - WordsCloze.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
+
+
         if times_left == 0:
             response['msg'] = '今天的完形填空次数已经用完啦！明天再来吧'
             response['last_times'] = 0
             return JsonResponse(response)
 
-        #
-
-
         now_date = timezone.now().date()
-        today_words = UserStudyWordInfo.objects.filter(user_id_id=user_id, last_reviewed=now_date).order_by(
-            '-forget_times')
+        today_words = UserStudyWordInfo.objects.filter(user_id_id=user_id, last_reviewed=now_date)
         words = []
 
-        #TODO
 
-        if len(today_words) < 5:
-            response['msg'] = '今日学习单词太少啦，先去背单词吧~'
+        #TODO
+        today_count=len(today_words)
+        if today_count < 5:
+            response['msg'] = '今日学习单词太少啦，先去背几个新单词吧~'
             response['content'] = ''
             response['wordList'] = []
             response['answer'] = []
@@ -133,7 +134,8 @@ def get_blank_text(request):
             # response['state'] = True
             # response['msg'] = 'please begin today's study'
         else:
-            for i in range(5):
+            random_index = random.sample(range(today_count), 5)
+            for i in random_index:
                 word = today_words[i].word_id.word
                 words.append(word)
 
@@ -144,6 +146,10 @@ def get_blank_text(request):
         article = cloze['content']
         answer = cloze['answer']
         wordlist = []
+
+        print(article)
+        print(answer)
+
 
         str_index = []
         for word in answer:
