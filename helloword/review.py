@@ -139,6 +139,8 @@ def get_blank_text(request):
                 word = today_words[i].word_id.word
                 words.append(word)
 
+        print(word)
+
         message = vocabulary.gen_cloze_from_words(words)
         cloze = client.Clinet().send_message(message)
 
