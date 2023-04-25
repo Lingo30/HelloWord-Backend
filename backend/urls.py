@@ -27,6 +27,8 @@ from django.conf import settings
 from django.views.static import serve
 from helloword import chat as chatview
 from helloword import review as reviewview
+from helloword import feedback as feedbackview
+from helloword import email_send as emailview
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -44,6 +46,8 @@ urlpatterns = [
     path("get_user_info/",userview.get_user_info),
     path("get_recommend_tags/",userview.get_recommend_tags),
     path("submit_info/",userview.submit_info),
+    path("check_email_code/",emailview.check_email_code),
+    path("send_email_code/",emailview.send_email_code),
 
     # wordlist
     path("get_user_wordlists/",listview.get_user_wordlists),
@@ -53,12 +57,14 @@ urlpatterns = [
     path("get_wordlists/",listview.get_wordlists),
     path("get_official_wordlists/",listview.get_official_wordlists),
     path("get_wordList_from_file/",listview.get_wordList_from_file),
+    path("get_today_learned_words_sum/",listview.get_today_learned_words_sum),
 
 
     path("update_learn_wordlist/", listview.update_learn_wordlist),
     path("add_wordlist_from_official/", listview.add_wordlist_from_official),
     path("get_wordList_from_file/",listview.get_wordList_from_file),
     path("add_wordlist_from_file/",listview.add_wordlist_from_file),
+    path("set_daily_num/",listview.set_daily_num),
 
     # learn word
     path("get_word_releation/", wordview.get_word_releation),
@@ -73,6 +79,7 @@ urlpatterns = [
     path("add_studylist_from_public/", initview.add_studylist_from_public),
     path("add_relation/", initview.add_relation),
     path("add_example/", initview.add_example),
+    path("file_to_public/",initview.file_to_public),
 
     # chat
     path("user_send/", chatview.user_send),
@@ -86,6 +93,8 @@ urlpatterns = [
     path("words_to_story/", reviewview.words_to_story),
     # writing
     path("writing_analysis/", reviewview.writing_analysis),
-    path("sentence_analysis/", reviewview.sentence_analysis)
+    path("sentence_analysis/", reviewview.sentence_analysis),
+
+    path("add_feedback/",feedbackview.add_feedback),
 
 ]

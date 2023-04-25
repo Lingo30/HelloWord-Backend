@@ -2,15 +2,43 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
-
+import datetime
 from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 
 Mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+def set_daily_num(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    user_id = data.get('userId')
+    num = data.get('num')
 
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.daily_words_count = num
+        user_obj.save()
+        response['state'] = True
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+def get_today_learned_words_sum(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    user_id = data.get('userId')
+
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        response['sum']=UserStudyWordInfo.objects.filter(user_id_id=user_obj,last_reviewed__gte=datetime.date.today()).count()
+        response['state'] = True
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 def get_wordList_from_file(request):
-    print("hello")
     response = {}
     response['state'] = False
 
@@ -119,9 +147,10 @@ def get_words_info(request):
                 'wordId': fetchword.id,
                 'word': fetchword.word,
                 'symbol': fetchword.phonetic_symbol,
-                'meaning': fetchword.definition_cn
+                'meaning': fetchword.definition_cn.replace("\\n","\n").replace("\\r","")
             }
             ret.append(cur)
+
         response['words']=ret
         response['state'] = True
 
@@ -266,7 +295,9 @@ def get_wordList_from_file(request):
                     words.append(oneword.lower())
                 oneword = ''
 
-        print(words)
+        if len(oneword) > 0:
+            words.append(oneword.lower())
+
         response['words']=words
 
         ret = []
@@ -279,7 +310,7 @@ def get_wordList_from_file(request):
             cur = {
                 'wordId':k.id,
                 'word':k.word,
-                'meaning':k.definition_cn
+                'meaning':k.definition_cn.replace("\\n","\n").replace("\\r","")
             }
             ret.append(cur)
 

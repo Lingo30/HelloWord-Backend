@@ -37,44 +37,50 @@ def get_word_releation(request):
 
         example_sen='暂无例句'
         example_objs = WordExample.objects.filter(word_id_id=base_word)
-        if example_objs.count()>0:
+        example_count = example_objs.count()
+        if example_count>0:
             # TODO
-            example_sen=example_objs[0].example_id.example_sentence
+            p=random.randint(0,example_count-1)
+            example_sen = example_objs[p].example_id.example_sentence + example_objs[p].example_id.example_translation
 
         synonyms_list=[]
         antonyms_list=[]
 
         word_relation_objs = WordRelation.objects.filter(word_id_id=base_word)
         for k in word_relation_objs:
-            if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 synonyms_list.append(cur)
-            elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.related_word_id.id,
                     'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 antonyms_list.append(cur)
 
         word_relation_objs = WordRelation.objects.filter(related_word_id_id=base_word)
         for k in word_relation_objs:
-            if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn
+                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 synonyms_list.append(cur)
-            elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                 cur = {
                     'word_id': k.word_id.id,
                     'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn
+                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
                 }
                 antonyms_list.append(cur)
 
@@ -188,11 +194,10 @@ def get_group_words_in_list(request):
 
         # 新单词全部背完; TODO 需要增加重置逻辑
         if len(new) == 0:
-            #userlist_obj.has_done
-            # TODO 修改model
+            if not userlist_obj.has_done:
+                userlist_obj.has_done=True
+                userlist_obj.save()
             return JsonResponse(response)
-
-        #print(new)
 
         review = []
         size = 10-len(new)
@@ -201,8 +206,11 @@ def get_group_words_in_list(request):
         #print(review_list)
         info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
         #print(info_list)
-        act = list(info_list.exclude(last_reviewed__gte=datetime.date.today()+datetime.timedelta(days=1)).values_list('id', flat=True))
+        acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()).exclude(simple=True)
         #print(act)
+        act = []
+        for m in acttmp:
+            act.append(m.word_id.id)
 
         if(len(act)<size):
             newlist = UserStudyListItem.objects.filter(user_study_list_id=userlist_obj).filter(id__gt=new_head).order_by('id')
@@ -232,8 +240,8 @@ def get_group_words_in_list(request):
                 'id': fetchword.id,
                 'word': fetchword.word,
                 'phonetic_symbol': fetchword.phonetic_symbol,
-                'definition_cn': fetchword.definition_cn,
-                'definition_en': fetchword.definition_en,
+                'definition_cn': fetchword.definition_cn.replace("\\n","\n").replace("\\r",""),
+                'definition_en': fetchword.definition_en.replace("\\n","\n").replace("\\r",""),
                 'word_id': fetchword.id,
             }
 
@@ -243,42 +251,42 @@ def get_group_words_in_list(request):
             example_objs = WordExample.objects.filter(word_id_id=base_word)
             if example_objs.count() > 0:
                 # TODO 补充例句返回逻辑 现在返回首个例句
-                example_sen = example_objs[0].example_id.example_sentence
+                example_sen = example_objs[0].example_id.example_sentence + example_objs[0].example_id.example_translation
 
             synonyms_list = []
             antonyms_list = []
 
             word_relation_objs = WordRelation.objects.filter(word_id_id=base_word)
             for k in word_relation_objs:
-                if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+                if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                     cur = {
                         'word_id': k.related_word_id.id,
                         'word': k.related_word_id.word,
-                        'definition_cn': k.related_word_id.definition_cn
+                        'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     synonyms_list.append(cur)
-                elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+                elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                     cur = {
                         'word_id': k.related_word_id.id,
                         'word': k.related_word_id.word,
-                        'definition_cn': k.related_word_id.definition_cn
+                        'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     antonyms_list.append(cur)
 
             word_relation_objs = WordRelation.objects.filter(related_word_id_id=base_word)
             for k in word_relation_objs:
-                if k.relation_type == 'synonyms' and len(synonyms_list) < 3:
+                if k.relation_type == 'synonym' and len(synonyms_list) < 3:
                     cur = {
                         'word_id': k.word_id.id,
                         'word': k.word_id.word,
-                        'definition_cn': k.word_id.definition_cn
+                        'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     synonyms_list.append(cur)
-                elif k.relation_type == 'antonyms' and len(antonyms_list) < 3:
+                elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
                     cur = {
                         'word_id': k.word_id.id,
                         'word': k.word_id.word,
-                        'definition_cn': k.word_id.definition_cn
+                        'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r","")
                     }
                     antonyms_list.append(cur)
 
