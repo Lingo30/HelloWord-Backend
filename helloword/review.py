@@ -154,11 +154,11 @@ def get_blank_text(request):
 
 
         str_index = []
-        tar_obj=re.findall(r"\$.*?\$",article)
+        tar_obj=re.finditer(r"\$.*?\$",article)
         for target in tar_obj:
             #target = '$' + word + '$'
-            start = article.index(target)
-            end = start + len(target)
+            start = target.start()
+            end = target.end()
 
             cur = {
                 'start': start,
