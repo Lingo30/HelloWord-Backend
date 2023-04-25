@@ -4,7 +4,7 @@ class Clinet(object):
     def __init__(self, api_key="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", model="gpt-3.5-turbo-0301"):
         openai.api_key = api_key
         self.model = model
-        self.temperature = 0
+        self.temperature = 0.7
         self.max_tokens = 2048
         self.top_p = 1
         self.stream = False
