@@ -12,7 +12,7 @@ from helloword.models import WordsStory,WordsCloze,WritingHistory,ReadingHistory
 from helloword.models import WritingHistory
 from chatgpt import client
 from chatgpt.tools import vocabulary, reading, writing
-
+import re
 dailly_times = 3
 # story
 def get_today_words(request):
@@ -154,10 +154,12 @@ def get_blank_text(request):
 
 
         str_index = []
-        for word in answer:
-            target = '$' + word + '$'
+        tar_obj=re.findall(r"\$.*?\$",article)
+        for target in tar_obj:
+            #target = '$' + word + '$'
             start = article.index(target)
             end = start + len(target)
+
             cur = {
                 'start': start,
                 'end': end
