@@ -5,7 +5,16 @@ from tenacity import (
     stop_after_attempt,
     wait_random_exponential,
 )  # for exponential backoff
+import re
 
+
+def extract_json(str):
+    match = re.search(r'{.*}', str)
+    if match:
+        return match.group(0)
+    else:
+        return None
+    
 def completion_with_backoff(**kwargs):
     return openai.ChatCompletion.create(**kwargs)
 

@@ -12,8 +12,9 @@ def analyze_essay(essay, topic=None):
         input_prompt = 'As an AI language model, your task is to analyze an English essay on a given topic, evaluate its content and structure, identify various errors such as grammar, tense, etc., and provide a rating out of ten.\nYour analysis should encompass the overall logical structure, main idea, and specific writing issues such as grammar, punctuation, spelling, and sentence structure, and provide detailed opinions on how to improve the quality of the given essay.\nThe output should be in JSON format: {"analysis": analysis_of_essay, "rating": rating_of_essay}\n'
     input_prompt += 'If the input is not a valid essay, please fill all the fields with "None".\n'
     topic_prompt = "\nInput topic: " + topic + "\n" if topic is not None else "\n"
+    format_prompt = 'Very Important!!! Please make sure that your output is in JSON format: {"analysis": analysis_of_essay, "rating": rating_of_essay}\n'
     messages = [
-        {"role": "user", "content": input_prompt + "Input essay: " + essay + topic_prompt},
+        {"role": "user", "content": input_prompt + "Input essay: " + essay + topic_prompt + format_prompt},
     ]
     return messages
 
