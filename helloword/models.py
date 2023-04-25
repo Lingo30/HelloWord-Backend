@@ -116,20 +116,20 @@ class WordsCloze(models.Model):
 class ReadingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     input = models.CharField(max_length=4096)
-    output = models.CharField(max_length=1023)
+    output = models.CharField(max_length=4096)
 
     post_time = models.DateTimeField(auto_now=True, null=True)
 
 class WritingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
     input = models.CharField(max_length=4096)
-    output = models.CharField(max_length=1023)
+    output = models.CharField(max_length=4096)
 
     post_time = models.DateTimeField(auto_now=True, null=True)
 
 class ChatHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    message = models.CharField(max_length=512, null=True)
+    message = models.CharField(max_length=8192, null=True)
     type = models.BooleanField(null=True)
     post_time = models.DateTimeField(auto_now=True, null=True)
 
