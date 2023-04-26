@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
-from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo
+import datetime
+from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo,EmailToken
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,UserStudyWordInfo
 from pathlib import Path
 import sys
@@ -128,6 +129,35 @@ def register(request):
     response['state'] = False
 
     data = json.loads(request.body.decode())
+
+
+    email_addr = data.get('email_addr')
+
+    code = data.get('code')
+
+    t = EmailToken.objects.filter(email_addr=email_addr, token=code)
+    if t.count() != 0:
+
+        email_token = t[0]
+        if email_token.has_register:
+            response['msg'] = '该邮箱已注册'
+            return JsonResponse(response)
+
+        if datetime.datetime.now() - email_token.gen_time > datetime.timedelta(minutes=20):
+            response['msg'] = '注册码已失效，请重试'
+            return JsonResponse(response)
+
+
+        email_token.has_register = True
+        email_token.save()
+    else:
+        response['msg'] = '邮箱验证码错误'
+        return JsonResponse(response)
+
+
+
+
+    #####
 
     newname = data.get('name')
     email_addr = data.get('email')

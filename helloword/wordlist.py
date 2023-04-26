@@ -341,10 +341,6 @@ def add_wordlist_from_file(request):
     words = data.get('words')
 
     try:
-
-
-
-
         user = UserInfo.objects.get(id=user_id)
 
         list_num = UserStudyList.objects.filter(user_id_id=user).count()
