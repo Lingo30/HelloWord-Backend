@@ -19,21 +19,25 @@ def user_send(request):
     question = data.get('question')
 
     try:
+
         user_obj = UserInfo.objects.get(id=user_id)
+        user_chat = ChatHistory(user_id=user_obj, message=question, type=True)
 
         times_left = dailly_times - ChatHistory.objects.filter(user_id_id=user_obj,
-                                                               type=False,
+                                                               type=True,
                                                               post_time__gte=datetime.date.today()).count()
         if times_left == 0:
             response['last_times'] = 0
             response['msg'] = '今天的对话次数已经用完啦！明天再来吧'
             return JsonResponse(response)
 
+
+        user_chat.save()
+
         messages = chat.chat(question)
         gpt_respond = client.Clinet().send_message(messages)
 
-        user_chat = ChatHistory(user_id=user_obj, message=question, type=True)
-        user_chat.save()
+
         gpt_chat = ChatHistory(user_id=user_obj, message=gpt_respond, type=False)
         gpt_chat.save()
 
