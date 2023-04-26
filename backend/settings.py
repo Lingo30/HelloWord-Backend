@@ -30,7 +30,7 @@ SECRET_KEY = ENV['SECRET_KEY']
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'None'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (ENV['DEBUG']=="TRUE")
 
 ALLOWED_HOSTS = [ENV['HOST']]
 

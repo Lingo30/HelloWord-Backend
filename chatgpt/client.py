@@ -1,7 +1,14 @@
 import openai
 from chatgpt.tools.utils import completion_with_backoff, num_tokens_from_messages
+import json
+from pathlib import Path
+import sys
+import os
+ENV={}
+with open('env.json') as env:
+    ENV = json.load(env)
 class Clinet(object):
-    def __init__(self, api_key="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", model="gpt-3.5-turbo-0301"):
+    def __init__(self, api_key=ENV['GPTKEY'], model="gpt-3.5-turbo-0301"):
         openai.api_key = api_key
         self.model = model
         self.temperature = 0.7
