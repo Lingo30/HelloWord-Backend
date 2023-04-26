@@ -41,7 +41,7 @@ def get_word_releation(request):
         if example_count>0:
             # TODO
             p=random.randint(0,example_count-1)
-            example_sen = example_objs[p].example_id.example_sentence +'\\'+'n'+ example_objs[p].example_id.example_translation
+            example_sen = example_objs[p].example_id.example_sentence +'\n'+ example_objs[p].example_id.example_translation
 
         synonyms_list=[]
         antonyms_list=[]
