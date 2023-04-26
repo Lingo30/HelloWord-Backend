@@ -82,7 +82,7 @@ def words_to_story(request):
             message = vocabulary.gen_story_from_words(words)
             story = client.Clinet().send_message(message)
             answer = ' '.join(words)
-            
+
 
             words_story.story=story
             words_story.answers = answer
@@ -118,11 +118,12 @@ def get_blank_text(request):
         times_left = dailly_times - WordsCloze.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
 
-
+        w = WordsCloze(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的完形填空次数已经用完啦！明天再来吧'
             response['last_times'] = 0
             return JsonResponse(response)
+        w.save()
 
         now_date = timezone.now().date()
         today_words = UserStudyWordInfo.objects.filter(user_id_id=user_id, last_reviewed=now_date)
@@ -200,7 +201,12 @@ def get_blank_text(request):
         s3 = ' '.join(words)
         s4 = ' '.join(str(i) for i in str_index)
 
-        w = WordsCloze(user_id=user_obj,cloze=s1,answers=s2,words=s3,eordlist=s4)
+
+
+        w.cloze=s1
+        w.answers = s2
+        w.words = s3
+        w.eordlist = s4
         w.save()
 
         response['state'] = True
@@ -228,10 +234,12 @@ def writing_analysis(request):
         user_obj = UserInfo.objects.get(id=user_id)
         times_left = dailly_times - WritingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
+        w = WritingHistory(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的作文分析次数已经用完啦！明天再来吧'
             response['last_times'] = 0
             return JsonResponse(response)
+        w.save()
 
         message = writing.analyze_essay(user_article)
         outputk = client.Clinet().send_message(message)
@@ -263,7 +271,9 @@ def writing_analysis(request):
 
 
 
-        w = WritingHistory(user_id=user_obj, input=s1, output=s2)
+
+        w.input=s1
+        w.output=s2
         w.save()
 
         response['state'] = True
@@ -292,10 +302,12 @@ def sentence_analysis(request):
         user_obj = UserInfo.objects.get(id=user_id)
         times_left = dailly_times - ReadingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
+        w = ReadingHistory(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的长难句分析次数已经用完啦！明天再来吧'
             response['last_times'] = 0
             return JsonResponse(response)
+        w.save()
 
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
         message = reading.analyze_sentence_alone(user_sentence)
@@ -327,7 +339,9 @@ def sentence_analysis(request):
         response['msg'] = '今日剩余次数：' + str(times_left)
         response['last_times'] = times_left
 
-        w = ReadingHistory(user_id=user_obj, input=s1, output=s2)
+
+        w.input=s1
+        w.output=s2
         w.save()
 
         response['state'] = True
