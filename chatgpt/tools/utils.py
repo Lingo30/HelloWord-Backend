@@ -9,11 +9,17 @@ import re
 
 
 def extract_json(str):
+
+    if ': "None"' in str:
+        return None
+    if ': None' in str:
+        return None
     match = re.search(r'{.*}', str)
     if match:
         return match.group(0)
     else:
         return None
+
     
 def completion_with_backoff(**kwargs):
     return openai.ChatCompletion.create(**kwargs)
