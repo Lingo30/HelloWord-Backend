@@ -71,16 +71,22 @@ def words_to_story(request):
             return JsonResponse(response)
         else:
             user_obj = UserInfo.objects.get(id=user_id)
+            words_story = WordsStory(user_id=user_obj)
             times_left = dailly_times-WordsStory.objects.filter(user_id_id = user_obj,post_time__gte=datetime.date.today()).count()
             if times_left==0:
                 response['msg'] = '今天的故事模式次数已经用完啦！明天再来吧'
                 response['last_times'] = 0
                 return JsonResponse(response)
+            words_story.save()
 
             message = vocabulary.gen_story_from_words(words)
             story = client.Clinet().send_message(message)
             answer = ' '.join(words)
-            words_story = WordsStory(user_id = user_obj, story=story, answers=answer)
+            
+
+            words_story.story=story
+            words_story.answers = answer
+
             words_story.save()
             response['story'] = story
 
