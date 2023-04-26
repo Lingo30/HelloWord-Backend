@@ -183,7 +183,7 @@ def file_to_public(request):
     response = {}
     response['state'] = False
 
-    newListName = '四级词单'
+    newListName = '六级词单'
 
     try:
         file = request.FILES.get('file')
@@ -192,7 +192,7 @@ def file_to_public(request):
 
         filepath = 'media/' + str(newfile.file_info)
         contents = open(filepath, 'r').read()
-        
+
         words = []
 
         oneword = ''
@@ -205,8 +205,6 @@ def file_to_public(request):
                     words.append(oneword.lower())
                 oneword = ''
 
-
-        response['words'] = words
 
         ret = []
         word_list = Word.objects.filter(word__in=words)
