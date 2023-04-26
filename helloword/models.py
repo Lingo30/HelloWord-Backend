@@ -14,7 +14,7 @@ class UserInfo(models.Model):
 
     tags = models.CharField(max_length=2048,null=True,default='音乐 电影')
 
-    last_study_date=models.DateTimeField(auto_now=True,null=True)
+    last_study_date_info=models.DateTimeField(auto_now=True,null=True)
 
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)

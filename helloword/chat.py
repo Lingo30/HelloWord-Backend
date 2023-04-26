@@ -4,11 +4,7 @@ from django.core import serializers
 import json
 from helloword.models import ChatHistory
 from helloword.models import UserInfo
-from chatgpt import client
-from chatgpt.tools import chat
-import datetime
 
-dailly_times = 7
 def user_send(request):
     response = {}
     response['state'] = False
@@ -19,33 +15,15 @@ def user_send(request):
     question = data.get('question')
 
     try:
-        user_obj = UserInfo.objects.get(id=user_id)
-
-        times_left = dailly_times - ChatHistory.objects.filter(user_id_id=user_obj,
-                                                               type=False,
-                                                              post_time__gte=datetime.date.today()).count()
-        if times_left == 0:
-            response['last_times'] = 0
-            response['msg'] = '今天的对话次数已经用完啦！明天再来吧'
-            return JsonResponse(response)
-
-        messages = chat.chat(question)
-        gpt_respond = client.Clinet().send_message(messages)
-
-        user_chat = ChatHistory(user_id=user_obj, message=question, type=True)
+        user_chat = ChatHistory(user_id_id=user_id, message=question, type=True)
         user_chat.save()
-        gpt_chat = ChatHistory(user_id=user_obj, message=gpt_respond, type=False)
+        # TODO 调用gpt得到数据，用户的输入在question中，输出保存在gpt_respond中
+        gpt_respond = 'gpt respond'
+        gpt_chat = ChatHistory(user_id_id=user_id, message=gpt_respond, type=False)
         gpt_chat.save()
-
-        times_left -= 1
-        response['msg'] = '今日剩余次数：' + str(times_left)
-        response['last_times'] = times_left
-
-
         response['receive_time'] = user_chat.post_time
         response['post_message'] = gpt_respond
         response['post_time'] = gpt_chat.post_time
-
         response['state'] = True
 
     except Exception as e:
@@ -61,8 +39,7 @@ def get_log_history(request):
 
     user_id = data.get('user_id')
     try:
-        user_obj=UserInfo.objects.get(id=user_id)
-        log_history = ChatHistory.objects.filter(user_id_id=user_obj)
+        log_history = ChatHistory.objects.filter(user_id_id=user_id)
         history = []
         for item in log_history:
             cur = {
