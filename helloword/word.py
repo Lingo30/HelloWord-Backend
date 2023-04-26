@@ -205,7 +205,7 @@ def get_group_words_in_list(request):
         # 去掉今天复习过的
         review_list = UserStudyListItem.objects.filter(user_study_list_id=userlist_obj).filter(id__lte=UserStudyListItem_head).values('word_id')
         #print(review_list)
-        info_list = UserStudyWordInfo.objects.filter(word_id__in=review_list)
+        info_list = UserStudyWordInfo.objects.filter(user_id_id=user,word_id__in=review_list)
         #print(info_list)
         acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()).exclude(simple=True)
         for p in acttmp:
