@@ -131,27 +131,7 @@ def register(request):
     data = json.loads(request.body.decode())
 
 
-    email_addr = data.get('email')
 
-    code = data.get('code')
-
-    t = EmailToken.objects.filter(email_addr=email_addr, token=code)
-    if t.count() != 0:
-
-        email_token = t[0]
-        if email_token.has_register:
-            response['msg'] = '该邮箱已注册'
-            return JsonResponse(response)
-
-        if datetime.datetime.now() - email_token.gen_time > datetime.timedelta(minutes=20):
-            response['msg'] = '注册码已失效，请重试'
-            return JsonResponse(response)
-
-
-
-    else:
-        response['msg'] = '邮箱验证码错误'
-        return JsonResponse(response)
 
 
 
@@ -166,19 +146,44 @@ def register(request):
         response['msg'] = '用户名不能为空'
 
     try:
-        userInfo = UserInfo.objects.filter(username=newname)
-        if userInfo.count() == 0:
 
-            userInfo = UserInfo(username=data.get('name'),
-                                email=email_addr,
-                                password_hash=data.get('password'))
-            userInfo.save()
-            response['state'] = True
+        email_addr = data.get('email')
+
+        code = data.get('code')
+
+        t = EmailToken.objects.filter(email_addr=email_addr, token=code)
+        if t.count() != 0:
+
+            email_token = t[0]
+            if email_token.has_register:
+                response['msg'] = '该邮箱已注册'
+                return JsonResponse(response)
+
+            if datetime.datetime.now() - email_token.gen_time > datetime.timedelta(minutes=20):
+                response['msg'] = '注册码已失效，请重试'
+                return JsonResponse(response)
+
 
 
         else:
+            response['msg'] = '邮箱验证码错误'
+            return JsonResponse(response)
+
+
+
+
+
+        userInfo = UserInfo.objects.filter(username=newname)
+        if userInfo.count() != 0:
             response['msg'] = '用户名重复'
             return JsonResponse(response)
+
+        userInfo = UserInfo(username=data.get('name'),
+                            email=email_addr,
+                            password_hash=data.get('password'))
+
+        userInfo.save()
+        response['state'] = True
 
         to_add = UserStudyList(
             user_id=userInfo,
