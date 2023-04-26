@@ -241,6 +241,14 @@ def add_wordlist_from_official(request):
 
     try:
         user = UserInfo.objects.get(id=user_id)
+
+        list_num=UserStudyList.objects.filter(user_id_id=user).count()
+        if(list_num>5):
+            undone_num = UserStudyList.objects.filter(user_id_id=user,has_done=False).count()
+            if undone_num>0:
+                response['msg'] = '先去把现在的词单背完吧~'
+                return JsonResponse(response)
+
         public = WordList.objects.get(id=public_id)
 
         # TODO 一个官方词单创建几次；至多多少词单
@@ -334,10 +342,19 @@ def add_wordlist_from_file(request):
 
     try:
 
-        wordlist=Word.objects.filter(id__in=words)
+
 
 
         user = UserInfo.objects.get(id=user_id)
+
+        list_num = UserStudyList.objects.filter(user_id_id=user).count()
+        if (list_num > 5):
+            undone_num = UserStudyList.objects.filter(user_id_id=user, has_done=False).count()
+            if undone_num > 0:
+                response['msg'] = '先去把现在的词单背完吧~'
+                return JsonResponse(response)
+
+        wordlist = Word.objects.filter(id__in=words)
 
         to_add = UserStudyList(
             user_id=user,
