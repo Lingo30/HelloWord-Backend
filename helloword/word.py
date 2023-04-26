@@ -190,6 +190,7 @@ def get_group_words_in_list(request):
             # TODO 重置此单功能删除本行逻辑
             if UserStudyWordInfo.objects.filter(user_id_id=user,word_id_id=k.word_id).count()==0:
                 new.append(k.word_id.id)
+                print('kkk'+str(k.word_id.id))
             new_head=k.id
 
         # 新单词全部背完; TODO 需要增加重置逻辑
@@ -211,6 +212,7 @@ def get_group_words_in_list(request):
         act = []
         for m in acttmp:
             act.append(m.word_id.id)
+            print('ttt' + str(k.word_id.id))
 
         if(len(act)<size):
             newlist = UserStudyListItem.objects.filter(user_study_list_id=userlist_obj).filter(id__gt=new_head).order_by('id')
@@ -221,16 +223,24 @@ def get_group_words_in_list(request):
 
                 if UserStudyWordInfo.objects.filter(user_id_id=user, word_id_id=k.word_id).count() == 0:
                     new.append(k.word_id.id)
+                    print('ggg' + str(k.word_id.id))
                 new_head = k.id
 
         # TODO 补充复习单词逻辑 现在从之前学习过的词中random
+
         if len(act)>size:
-            new.extend(random.sample(act, size))
+            s=random.sample(act, size)
+            for y in s:
+                print('ppp'+str(y))
+            new.extend(s)
         else:
+            for y in act:
+                print('jjj'+str(y))
             new.extend(act)
 
-        random.shuffle(new)
         print(new)
+        random.shuffle(new)
+        
 
         ret=[]
         for pp in new:
