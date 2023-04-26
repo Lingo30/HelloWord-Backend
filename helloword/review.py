@@ -230,18 +230,12 @@ def writing_analysis(request):
         message = writing.analyze_essay(user_article)
         outputk = client.Clinet().send_message(message)
         output = utils.extract_json(outputk)
-        # 如果解析结果为None，则重新执行一次
+
         if output == None:
-            print('ttt')
-            outputk = client.Clinet().send_message(message)
-            output = utils.extract_json(outputk)
-        # 如果结果还为None，则返回错误信息
-        if output == None:
-            print('kkk')
-            response['msg'] = '解析失败，请重新输入'
+            response['msg'] = '不是合法文章，请注意写作规范哦'
             return JsonResponse(response)
 
-        print('ggg')
+
         print(output)
         print(outputk)
         output = json.loads(outputk)
