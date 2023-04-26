@@ -146,7 +146,7 @@ def get_blank_text(request):
 
         message = vocabulary.gen_cloze_from_words(words)
         outputk = client.Clinet().send_message(message)
-        
+
         output = utils.extract_json(outputk)
         # 如果解析结果为None，则重新执行一次
         if output == None:
@@ -156,7 +156,7 @@ def get_blank_text(request):
         if output == None:
             response['msg'] = '解析失败，请重新输入'
             return JsonResponse(response)
-        
+
         cloze = json.loads(output)
         article = cloze['content']
         answer = cloze['answer']
@@ -232,13 +232,18 @@ def writing_analysis(request):
         output = utils.extract_json(outputk)
         # 如果解析结果为None，则重新执行一次
         if output == None:
+            print('ttt')
             outputk = client.Clinet().send_message(message)
             output = utils.extract_json(outputk)
         # 如果结果还为None，则返回错误信息
         if output == None:
+            print('kkk')
             response['msg'] = '解析失败，请重新输入'
             return JsonResponse(response)
 
+        print('ggg')
+        print(output)
+        print(outputk)
         output = json.loads(outputk)
         # writing_history = WritingHistory(user_id=user_id, input=user_article, output=output)
         # writing_history.save()
@@ -301,7 +306,7 @@ def sentence_analysis(request):
         if output == None:
             response['msg'] = '解析失败，请重新输入'
             return JsonResponse(response)
-        
+
         output = json.loads(output)
         translation = output['content']
         structure = output['structure']
