@@ -131,7 +131,7 @@ def register(request):
     data = json.loads(request.body.decode())
 
 
-    email_addr = data.get('email_addr')
+    email_addr = data.get('email')
 
     code = data.get('code')
 
