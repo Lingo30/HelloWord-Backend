@@ -231,6 +231,9 @@ def writing_analysis(request):
         outputk = client.Clinet().send_message(message)
         output = utils.extract_json(outputk)
 
+        print(output)
+        print(outputk)
+
         if output == None:
             response['msg'] = '不是合法文章，请注意写作规范哦'
             return JsonResponse(response)
