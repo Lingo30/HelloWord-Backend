@@ -183,7 +183,7 @@ def file_to_public(request):
     response = {}
     response['state'] = False
 
-    newListName = '新用户词单'
+    newListName = '四级词单'
 
     try:
         file = request.FILES.get('file')
@@ -192,7 +192,7 @@ def file_to_public(request):
 
         filepath = 'media/' + str(newfile.file_info)
         contents = open(filepath, 'r').read()
-        print(contents)
+        
         words = []
 
         oneword = ''
@@ -205,7 +205,7 @@ def file_to_public(request):
                     words.append(oneword.lower())
                 oneword = ''
 
-        print(words)
+
         response['words'] = words
 
         ret = []
@@ -217,7 +217,7 @@ def file_to_public(request):
         to_add = WordList(
             list_name=newListName,
             list_author_name='HelloWord团队',
-            description='平台新用户初始化词单',
+            description='平台官方词单',
             gen_type='0'
         )
         to_add.save()
