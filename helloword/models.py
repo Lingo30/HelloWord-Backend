@@ -14,6 +14,8 @@ class UserInfo(models.Model):
 
     tags = models.CharField(max_length=2048,null=True,default='音乐 电影')
 
+    last_study_date=models.DateTimeField(auto_now=True,null=True)
+
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)
     token = models.CharField(max_length=32)
@@ -96,15 +98,15 @@ class WordPhoto(models.Model):
 
 class WordsStory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    story = models.CharField(max_length=4096)
-    answers = models.CharField(max_length=255)
+    story = models.CharField(max_length=4096, null=True)
+    answers = models.CharField(max_length=255, null=True)
 
     post_time = models.DateTimeField(auto_now=True, null=True)
 
 class WordsCloze(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    cloze = models.CharField(max_length=4096)
-    answers = models.CharField(max_length=255)
+    cloze = models.CharField(max_length=4096, null=True)
+    answers = models.CharField(max_length=255, null=True)
 
     words = models.CharField(max_length=255,null=True)
     eordlist = models.CharField(max_length=255,null=True)
@@ -115,15 +117,15 @@ class WordsCloze(models.Model):
 
 class ReadingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    input = models.CharField(max_length=4096)
-    output = models.CharField(max_length=4096)
+    input = models.CharField(max_length=4096, null=True)
+    output = models.CharField(max_length=4096, null=True)
 
     post_time = models.DateTimeField(auto_now=True, null=True)
 
 class WritingHistory(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
-    input = models.CharField(max_length=4096)
-    output = models.CharField(max_length=4096)
+    input = models.CharField(max_length=4096, null=True)
+    output = models.CharField(max_length=4096, null=True)
 
     post_time = models.DateTimeField(auto_now=True, null=True)
 
