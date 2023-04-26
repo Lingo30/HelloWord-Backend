@@ -148,8 +148,7 @@ def register(request):
             return JsonResponse(response)
 
 
-        email_token.has_register = True
-        email_token.save()
+
     else:
         response['msg'] = '邮箱验证码错误'
         return JsonResponse(response)
@@ -203,6 +202,9 @@ def register(request):
             'wordNum': userInfo.daily_words_count,
             'selectWordlist': userInfo.last_study_list.id
         }
+
+        email_token.has_register = True
+        email_token.save()
 
     except Exception as e:
         response['msg'] = str(e)
