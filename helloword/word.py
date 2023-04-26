@@ -209,7 +209,7 @@ def get_group_words_in_list(request):
         #print(info_list)
         acttmp = info_list.exclude(last_reviewed__gte=datetime.date.today()).exclude(simple=True)
         for p in acttmp:
-            print('mmmmmm'+p.id)
+            print('mmmmmm'+str(p.id))
         act = []
         for m in acttmp:
             act.append(m.word_id.id)
