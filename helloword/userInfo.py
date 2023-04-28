@@ -82,7 +82,7 @@ def submit_image(request):
             print("复制文件失败!")
             response['msg'] = "复制文件失败!"
 
-        response['url'] = 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user_obj.user_avatar)
+        response['url'] = 'http://' + str(ENV['HOST']) +  str(ENV['API'])  +'/static/' + str(user_obj.user_avatar)
 
         response['state'] = True
 
@@ -262,7 +262,7 @@ def get_user_info(request):
 
     try:
         response['info'] = {
-            'avatar_path': 'http://' + str(ENV['HOST']) + ':9001/static/' + str(user.user_avatar),
+            'avatar_path': 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/' + str(user.user_avatar),
             'email': user.email if user.email else '',
             'words': UserStudyWordInfo.objects.filter(user_id_id=user).count(),
             'name': user.not_unique_name if user.not_unique_name else '',
