@@ -40,6 +40,7 @@ urlpatterns = [
     # user
     path("login/", userview.login),
     path("register/", userview.register),
+    path("cookie_login/", userview.cookie_login),
 
     path("submit_image/",userview.submit_image),
     path("change_pwd/",userview.change_pwd),
