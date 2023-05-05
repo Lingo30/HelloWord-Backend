@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import os
 import struct
+import random
 
 with open('env.json') as env:
     ENV = json.load(env)
@@ -143,8 +144,11 @@ def submit_image(request):
     return JsonResponse(response)
 
 
+def gen_token():
+    # 返回一个随机字符串，生成4位验证码
+    return ''.join(random.choices('0123456789abcdefghigklmnopqrstuvwxyz', k=24))
+
 def login(request):
-    print("hello")
     response = {}
     response['state'] = False
     data = json.loads(request.body.decode())
@@ -162,6 +166,17 @@ def login(request):
                     'wordNum': userInfo[0].daily_words_count,
                     'selectWordlist': userInfo[0].last_study_list.id
                 }
+
+                cookie_res = JsonResponse(response)
+                cookie_token = gen_token()
+                user_obj = userInfo[0]
+                user_obj.cookie_token = cookie_token
+                user_obj.save()
+                cookie_res.set_cookie(key='user_token',value=cookie_token,
+                                      expires=datetime.datetime.now() + datetime.timedelta(days=2),
+                                      secure=True, httponly=True)
+                return cookie_res
+
             else:
                 response['msg'] = '密码错误'
 
