@@ -195,25 +195,13 @@ def register(request):
 
     data = json.loads(request.body.decode())
 
-
-
-
-
-
-
-    #####
-
     newname = data.get('name')
-    email_addr = data.get('email')
-    print('email')
-    print(email_addr)
     if newname == '':
         response['msg'] = '用户名不能为空'
 
     try:
 
         email_addr = data.get('email')
-
         code = data.get('code')
 
         t = EmailToken.objects.filter(email_addr=email_addr, token=code)
@@ -228,15 +216,9 @@ def register(request):
                 response['msg'] = '注册码已失效，请重试'
                 return JsonResponse(response)
 
-
-
         else:
             response['msg'] = '邮箱验证码错误'
             return JsonResponse(response)
-
-
-
-
 
         userInfo = UserInfo.objects.filter(username=newname)
         if userInfo.count() != 0:
@@ -248,7 +230,6 @@ def register(request):
                             password_hash=data.get('password'))
 
         userInfo.save()
-        response['state'] = True
 
         to_add = UserStudyList(
             user_id=userInfo,
@@ -275,6 +256,58 @@ def register(request):
 
         email_token.has_register = True
         email_token.save()
+
+        response['state'] = True
+
+        cookie_res = JsonResponse(response)
+        cookie_token = gen_token()
+        userInfo = userInfo
+        userInfo.cookie_token = cookie_token
+        userInfo.save()
+        cookie_res.set_cookie(key='user_token', value=cookie_token,
+                              expires=datetime.datetime.now() + datetime.timedelta(days=2),
+                              secure=True, httponly=True)
+        return cookie_res
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
+def cookie_login(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode())
+    user_id = data.get('userId')
+
+    try:
+        cookie = request.COOKIES['user_token']
+        print(str(user_id)+str(cookie))
+
+        if not cookie or cookie=='':
+            response['msg'] = '登录过期，请重新登录'
+        userInfo = UserInfo.objects.filter(id=user_id,cookie_token=cookie)
+        if userInfo.count() == 0:
+            response['msg'] = '登录过期，请重新登录'
+
+        elif userInfo.count() == 1:
+            response['state'] = True
+            response['data'] = {
+                'uid': userInfo[0].id,
+                'wordNum': userInfo[0].daily_words_count,
+                'selectWordlist': userInfo[0].last_study_list.id
+            }
+
+            cookie_res = JsonResponse(response)
+            cookie_token = gen_token()
+            user_obj = userInfo[0]
+            user_obj.cookie_token = cookie_token
+            user_obj.save()
+            cookie_res.set_cookie(key='user_token', value=cookie_token,
+                                  expires=datetime.datetime.now() + datetime.timedelta(days=2),
+                                  secure=True, httponly=True)
+            return cookie_res
 
     except Exception as e:
         response['msg'] = str(e)
