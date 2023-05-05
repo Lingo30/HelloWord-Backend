@@ -299,16 +299,6 @@ def cookie_login(request):
                 'selectWordlist': userInfo[0].last_study_list.id
             }
 
-            cookie_res = JsonResponse(response)
-            cookie_token = gen_token()
-            user_obj = userInfo[0]
-            user_obj.cookie_token = cookie_token
-            user_obj.save()
-            cookie_res.set_cookie(key='user_token', value=cookie_token,
-                                  expires=datetime.datetime.now() + datetime.timedelta(days=2),
-                                  secure=True, httponly=True)
-            return cookie_res
-
     except Exception as e:
         response['msg'] = str(e)
 
