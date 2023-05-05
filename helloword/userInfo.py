@@ -8,10 +8,55 @@ from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListIt
 from pathlib import Path
 import sys
 import os
+import struct
 
 with open('env.json') as env:
     ENV = json.load(env)
 
+
+type_dict = {
+    'FFD8FF': 'jpg',
+    '89504E47': 'png',
+}
+max_len = len(max(type_dict, key=len)) // 2
+
+def get_size(fobj):
+    try:
+        if fobj.content_length:
+            return fobj.content_length
+    except Exception as e:
+        print(str(e))
+
+    try:
+        pos = fobj.tell()
+        fobj.seek(0, 2)  #seek to end
+        size = fobj.tell()
+        fobj.seek(pos)  # back to original position
+        return size
+    except Exception as e:
+        print(str(e))
+def get_filetype(file):
+    # 读取二进制文件开头一定的长度
+    try:
+        filetype = file.name.split('.')[-1]
+        if filetype != 'jpg' and filetype != 'png':
+            return False
+
+        byte = file.read(max_len)
+        # 解析为元组
+        byte_list = struct.unpack('B' * max_len, byte)
+    except Exception as e:
+        print(str(e))
+        return False
+    # 转为16进制
+    code = ''.join([('%X' % each).zfill(2) for each in byte_list])
+    # 根据标识符筛选判断文件格式
+    result = list(filter(lambda x: code.startswith(x), type_dict))
+    print(code)
+    if result:
+        return True
+    else:
+        return False
 
 def copy(src_file, dst_file):
     '''  src_file : 源文件名
@@ -59,17 +104,23 @@ def submit_info(request):
 
 
 def submit_image(request):
-    print("hello")
     response = {}
     response['state'] = False
 
-    iid = int(str(request.FILES.get('user_id').read())[2:-1])
-    print(iid)
-
     try:
         file = request.FILES.get('img')
-        #newfile = FileInfo(file_info=file)
-        #newfile.save()
+
+        if not get_filetype(file):
+            response['state'] = True
+            response['msg'] = '请上传jpg或png文件'
+            return JsonResponse(response)
+
+        if get_size(file)>4000000:
+            response['state'] = True
+            response['msg'] = '图片超过4MB'
+            return JsonResponse(response)
+
+        iid = int(str(request.FILES.get('user_id').read())[2:-1])
         user_obj = UserInfo.objects.get(id=iid)
         user_obj.user_avatar=file
         user_obj.save()
@@ -80,12 +131,11 @@ def submit_image(request):
             print("复制文件成功!")
         else:
             print("复制文件失败!")
-            response['msg'] = "复制文件失败!"
+            response['msg'] = "图片上传失败!"
+            return JsonResponse(response)
 
         response['url'] = 'http://' + str(ENV['HOST']) +  str(ENV['API'])  +'/static/' + str(user_obj.user_avatar)
-
         response['state'] = True
-
 
     except Exception as e:
         response['msg'] = str(e)
