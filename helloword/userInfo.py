@@ -49,7 +49,7 @@ def checkCookie(request,response,user_id):
     except Exception as e:
         print(str(e))
         response['state']=False
-        response['msg']=str(e)
+        response['msg']=token_msg
         return False
 
 
