@@ -40,7 +40,7 @@ def get_today_learned_words_sum(request):
         user_obj = UserInfo.objects.get(id=user_id)
         response['sum']=UserStudyWordInfo.objects.filter(user_id_id=user_obj,last_reviewed__gte=datetime.date.today()).count()
         response['state'] = True
-        return wrapRes(response, user_id)
+        #return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -104,7 +104,7 @@ def get_user_wordlists(request):
 
         response['ids'] = list(study_list)
         response['state'] = True
-        return wrapRes(response, user_id)
+        #return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
