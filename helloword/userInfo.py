@@ -15,7 +15,8 @@ with open('env.json') as env:
     ENV = json.load(env)
 
 token_msg='token失效，请重新登录'
-def wrapRes(response,user_id):
+
+def wrapNewRes(response,user_id):
     try:
         cookie_res = JsonResponse(response)
         cookie_token = gen_token()
@@ -23,6 +24,22 @@ def wrapRes(response,user_id):
         userInfo.cookie_token = cookie_token
         userInfo.save()
         cookie_res.set_cookie(key='user_token', value=cookie_token,
+                              expires=datetime.datetime.now() + datetime.timedelta(days=2),samesite=None,
+                              secure=True, httponly=True)
+        return cookie_res
+    except Exception as e:
+        print(str(e))
+        response['state']=False
+        response['msg']=str(e)
+        return JsonResponse(response)
+def wrapRes(response,user_id):
+    try:
+        cookie_res = JsonResponse(response)
+        #cookie_token = gen_token()
+        userInfo=UserInfo.objects.get(id=user_id)
+        #userInfo.cookie_token = cookie_token
+        #userInfo.save()
+        cookie_res.set_cookie(key='user_token', value=userInfo.cookie_token,
                               expires=datetime.datetime.now() + datetime.timedelta(days=2),samesite=None,
                               secure=True, httponly=True)
         return cookie_res
@@ -215,7 +232,7 @@ def login(request):
                     'selectWordlist': userInfo[0].last_study_list.id
                 }
 
-                return wrapRes(response, userInfo[0].id)
+                return wrapNewRes(response, userInfo[0].id)
 
             else:
                 response['msg'] = '密码错误'
@@ -299,7 +316,7 @@ def register(request):
 
         response['state'] = True
 
-        return wrapRes(response,userInfo.id)
+        return wrapNewRes(response,userInfo.id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -326,7 +343,7 @@ def cookie_login(request):
                 'selectWordlist': userInfo.last_study_list.id
             }
 
-            return wrapRes(response,user_id)
+            return wrapNewRes(response,user_id)
 
     except Exception as e:
         response['msg'] = str(e)
