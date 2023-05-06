@@ -14,6 +14,44 @@ import random
 with open('env.json') as env:
     ENV = json.load(env)
 
+token_msg='token失效，请重新登录'
+def wrapRes(response,user_id):
+    try:
+        cookie_res = JsonResponse(response)
+        cookie_token = gen_token()
+        userInfo=UserInfo.objects.get(id=user_id)
+        userInfo.cookie_token = cookie_token
+        userInfo.save()
+        cookie_res.set_cookie(key='user_token', value=cookie_token,
+                              expires=datetime.datetime.now() + datetime.timedelta(days=2),
+                              secure=True, httponly=True)
+        return cookie_res
+    except Exception as e:
+        print(str(e))
+        response['state']=False
+        response['msg']=str(e)
+        return JsonResponse(response)
+
+def checkCookie(request,response,user_id):
+    try:
+        cookie = request.COOKIES['user_token']
+
+        if not cookie or cookie == '':
+            response['msg'] = token_msg
+            response['state'] = False
+            return False
+        userInfo = UserInfo.objects.filter(id=user_id, cookie_token=cookie)
+        if userInfo.count() == 0:
+            response['msg'] = token_msg
+            response['state'] = False
+            return False
+        return True
+    except Exception as e:
+        print(str(e))
+        response['state']=False
+        response['msg']=str(e)
+        return False
+
 
 type_dict = {
     'FFD8FF': 'jpg',
@@ -90,14 +128,20 @@ def submit_info(request):
 
 
     try:
+
         data = json.loads(request.body.decode())
+        user_id=data.get('user_id')
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+
         k=data.get('user_info')
-        user = UserInfo.objects.get(id=data.get('user_id'))
+        user = UserInfo.objects.get(id=user_id)
         user.not_unique_name = k['name']
         user.tags = ' '.join(k['tags'])
         user.save()
 
         response['state']=True
+        return wrapRes(response,user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -109,6 +153,9 @@ def submit_image(request):
     response['state'] = False
 
     try:
+        iid = int(str(request.FILES.get('user_id').read())[2:-1])
+        if not checkCookie(request,response,iid):
+            return JsonResponse(response)
         file = request.FILES.get('img')
 
         if not get_filetype(file):
@@ -121,7 +168,7 @@ def submit_image(request):
             response['msg'] = '图片超过4MB'
             return JsonResponse(response)
 
-        iid = int(str(request.FILES.get('user_id').read())[2:-1])
+
         user_obj = UserInfo.objects.get(id=iid)
         user_obj.user_avatar=file
         user_obj.save()
@@ -137,6 +184,7 @@ def submit_image(request):
 
         response['url'] = 'http://' + str(ENV['HOST']) +  str(ENV['API'])  +'/static/' + str(user_obj.user_avatar)
         response['state'] = True
+        return wrapRes(response,iid)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -167,15 +215,7 @@ def login(request):
                     'selectWordlist': userInfo[0].last_study_list.id
                 }
 
-                cookie_res = JsonResponse(response)
-                cookie_token = gen_token()
-                user_obj = userInfo[0]
-                user_obj.cookie_token = cookie_token
-                user_obj.save()
-                cookie_res.set_cookie(key='user_token',value=cookie_token,
-                                      expires=datetime.datetime.now() + datetime.timedelta(days=2),
-                                      secure=True, httponly=True)
-                return cookie_res
+                return wrapRes(response, userInfo[0].id)
 
             else:
                 response['msg'] = '密码错误'
@@ -259,15 +299,7 @@ def register(request):
 
         response['state'] = True
 
-        cookie_res = JsonResponse(response)
-        cookie_token = gen_token()
-        userInfo = userInfo
-        userInfo.cookie_token = cookie_token
-        userInfo.save()
-        cookie_res.set_cookie(key='user_token', value=cookie_token,
-                              expires=datetime.datetime.now() + datetime.timedelta(days=2),
-                              secure=True, httponly=True)
-        return cookie_res
+        return wrapRes(response,userInfo.id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -282,32 +314,19 @@ def cookie_login(request):
     user_id = data.get('userId')
 
     try:
-        cookie = request.COOKIES['user_token']
-        print(str(user_id)+str(cookie))
+        userInfo = UserInfo.objects.get(id=user_id)
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
 
-        if not cookie or cookie=='':
-            response['msg'] = '登录过期，请重新登录'
-        userInfo = UserInfo.objects.filter(id=user_id,cookie_token=cookie)
-        if userInfo.count() == 0:
-            response['msg'] = '登录过期，请重新登录'
-
-        elif userInfo.count() == 1:
+        else:
             response['state'] = True
             response['data'] = {
-                'uid': userInfo[0].id,
-                'wordNum': userInfo[0].daily_words_count,
-                'selectWordlist': userInfo[0].last_study_list.id
+                'uid': userInfo.id,
+                'wordNum': userInfo.daily_words_count,
+                'selectWordlist': userInfo.last_study_list.id
             }
 
-            cookie_res = JsonResponse(response)
-            cookie_token = gen_token()
-            user_obj = userInfo[0]
-            user_obj.cookie_token = cookie_token
-            user_obj.save()
-            cookie_res.set_cookie(key='user_token', value=cookie_token,
-                                  expires=datetime.datetime.now() + datetime.timedelta(days=2),
-                                  secure=True, httponly=True)
-            return cookie_res
+            return wrapRes(response,user_id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -324,12 +343,15 @@ def change_pwd(request):
     new_pwd = data.get('new_pwd')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user = UserInfo.objects.get(id=user_id)
 
         if user.password_hash == old_pwd:
             user.password_hash = new_pwd
             user.save()
             response['state'] = True
+            return wrapRes(response, user_id)
 
         else:
             response['msg'] = '原密码错误'
@@ -359,6 +381,8 @@ def get_user_info(request):
     user = UserInfo.objects.get(id=user_id)
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         response['info'] = {
             'avatar_path': 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/' + str(user.user_avatar),
             'email': user.email if user.email else '',
@@ -369,6 +393,7 @@ def get_user_info(request):
             'tags': user.tags.split(" ")
         }
         response['state'] = True
+        return wrapRes(response, user_id)
 
 
     except Exception as e:

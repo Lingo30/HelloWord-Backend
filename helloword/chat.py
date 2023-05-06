@@ -8,6 +8,8 @@ from chatgpt import client
 from chatgpt.tools import chat
 import datetime
 
+from helloword.userInfo import checkCookie, wrapRes
+
 dailly_times = 7
 def user_send(request):
     response = {}
@@ -19,7 +21,8 @@ def user_send(request):
     question = data.get('question')
 
     try:
-
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
         user_chat = ChatHistory(user_id=user_obj, message=question, type=True)
 
@@ -51,6 +54,7 @@ def user_send(request):
         response['post_time'] = gpt_chat.post_time
 
         response['state'] = True
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -65,6 +69,8 @@ def get_log_history(request):
 
     user_id = data.get('user_id')
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user_obj=UserInfo.objects.get(id=user_id)
         log_history = ChatHistory.objects.filter(user_id_id=user_obj)
         history = []
@@ -77,6 +83,7 @@ def get_log_history(request):
             history.append(cur)
         response['history'] = history
         response['state'] = True
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 

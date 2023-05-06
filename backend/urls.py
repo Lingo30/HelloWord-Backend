@@ -47,7 +47,7 @@ urlpatterns = [
     path("get_user_info/",userview.get_user_info),
     path("get_recommend_tags/",userview.get_recommend_tags),
     path("submit_info/",userview.submit_info),
-    path("check_email_code/",emailview.check_email_code),
+    #path("check_email_code/",emailview.check_email_code),
     path("send_email_code/",emailview.send_email_code),
 
     # wordlist
@@ -72,15 +72,15 @@ urlpatterns = [
     path("group_word_learn_save/", wordview.group_word_learn_save),
     path("get_group_words_in_list/", wordview.get_group_words_in_list),
 
-    path("reset_study_list/", wordview.reset_study_list),
+    #path("reset_study_list/", wordview.reset_study_list),
 
     # init mysql
-    path("add_word/", initview.add_word),
-    path("add_public_list/", initview.add_public_list),
-    path("add_studylist_from_public/", initview.add_studylist_from_public),
-    path("add_relation/", initview.add_relation),
-    path("add_example/", initview.add_example),
-    path("file_to_public/",initview.file_to_public),
+    #path("add_word/", initview.add_word),
+    #path("add_public_list/", initview.add_public_list),
+    #path("add_studylist_from_public/", initview.add_studylist_from_public),
+    #path("add_relation/", initview.add_relation),
+    #path("add_example/", initview.add_example),
+    #path("file_to_public/",initview.file_to_public),
 
     # chat
     path("user_send/", chatview.user_send),

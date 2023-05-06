@@ -7,6 +7,8 @@ import random
 
 from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,UserStudyWordInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
+from helloword.userInfo import checkCookie, wrapRes
+
 
 def reset_study_list(request):
     response = {}
@@ -109,6 +111,9 @@ def group_word_learn_save(request):
 
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+
         user_study = UserStudyList.objects.get(id = list_id)
         user = UserInfo.objects.get(id=user_id)
         for k in ret_words:
@@ -139,12 +144,9 @@ def group_word_learn_save(request):
         study_list.head = new_head
         study_list.save()
 
-        response['state'] = True
-
         response['new_head'] = new_head
-
-
-
+        response['state'] = True
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -161,6 +163,8 @@ def get_group_words_in_list(request):
 
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user = UserInfo.objects.get(id=user_id)
 
         # 用户是否有单词书
@@ -311,6 +315,7 @@ def get_group_words_in_list(request):
         response['group_words']=ret
         response['list_id']=userlist_obj.id
         response['state'] = True
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
