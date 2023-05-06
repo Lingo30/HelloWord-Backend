@@ -23,7 +23,7 @@ def wrapRes(response,user_id):
         userInfo.cookie_token = cookie_token
         userInfo.save()
         cookie_res.set_cookie(key='user_token', value=cookie_token,
-                              expires=datetime.datetime.now() + datetime.timedelta(days=2),
+                              expires=datetime.datetime.now() + datetime.timedelta(days=2),samesite=None,
                               secure=True, httponly=True)
         return cookie_res
     except Exception as e:
