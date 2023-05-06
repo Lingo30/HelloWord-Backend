@@ -4,6 +4,8 @@ from django.core import serializers
 import json
 import datetime
 from helloword.models import Word,UserInfo,Feedback
+from helloword.userInfo import checkCookie, wrapRes
+
 
 def add_feedback(request):
     response = {}
@@ -12,8 +14,10 @@ def add_feedback(request):
 
     try:
         data = json.loads(request.body.decode())
-
-        user = UserInfo.objects.get(id=data.get('userId'))
+        user_id=data.get('userId')
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+        user = UserInfo.objects.get(id=user_id)
         type = data.get('type')
         modules = data.get('modules')
         content = data.get('content')
@@ -32,6 +36,7 @@ def add_feedback(request):
 
 
         response['state']=True
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 

@@ -13,6 +13,9 @@ from helloword.models import WritingHistory
 from chatgpt import client
 from chatgpt.tools import vocabulary, reading, writing, utils
 import re
+
+from helloword.userInfo import wrapRes, checkCookie
+
 dailly_times = 3
 
 # story
@@ -26,6 +29,8 @@ def get_today_words(request):
     now_date = timezone.now().date()
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         today_words = UserStudyWordInfo.objects.filter(user_id_id=user_id, last_reviewed=now_date)
         words = []
         for item in today_words:
@@ -43,6 +48,7 @@ def get_today_words(request):
         response['today_words'] = words
         response['state'] = True
         response['msg'] = 'success'
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -60,6 +66,8 @@ def words_to_story(request):
     words = data.get('words')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         if not words:
             response['msg'] = '请背诵单词后，选择今日所学单词！'
             return JsonResponse(response)
@@ -95,6 +103,7 @@ def words_to_story(request):
             response['last_times']=times_left
 
             response['state'] = True
+            return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -112,7 +121,8 @@ def get_blank_text(request):
     user_id = data.get('user_id')
 
     try:
-
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         #
         user_obj = UserInfo.objects.get(id=user_id)
         times_left = dailly_times - WordsCloze.objects.filter(user_id_id=user_obj,
@@ -148,8 +158,6 @@ def get_blank_text(request):
             for i in random_index:
                 word = today_words[i].word_id.word
                 words.append(word)
-
-        print(word)
 
         message = vocabulary.gen_cloze_from_words(words)
         outputk = client.Clinet().send_message(message)
@@ -210,6 +218,7 @@ def get_blank_text(request):
         w.save()
 
         response['state'] = True
+        return wrapRes(response, user_id)
 
 
     except Exception as e:
@@ -231,6 +240,8 @@ def writing_analysis(request):
     user_id = data.get('user_id')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
         times_left = dailly_times - WritingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
@@ -277,7 +288,7 @@ def writing_analysis(request):
         w.save()
 
         response['state'] = True
-
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -299,6 +310,8 @@ def sentence_analysis(request):
 
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
         times_left = dailly_times - ReadingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
@@ -345,6 +358,7 @@ def sentence_analysis(request):
         w.save()
 
         response['state'] = True
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)

@@ -5,6 +5,7 @@ import json
 import datetime
 from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
+from helloword.userInfo import checkCookie, wrapRes
 
 Mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -16,10 +17,13 @@ def set_daily_num(request):
     num = data.get('num')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
         user_obj.daily_words_count = num
         user_obj.save()
         response['state'] = True
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -31,13 +35,18 @@ def get_today_learned_words_sum(request):
     user_id = data.get('userId')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
         response['sum']=UserStudyWordInfo.objects.filter(user_id_id=user_obj,last_reviewed__gte=datetime.date.today()).count()
         response['state'] = True
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
     return JsonResponse(response)
+
+'''
 def get_wordList_from_file(request):
     response = {}
     response['state'] = False
@@ -50,6 +59,8 @@ def get_wordList_from_file(request):
         response['msg'] = str(e)
 
     return JsonResponse(response)
+    
+'''
 def get_official_wordlists(request):
     response = {}
     response['state'] = False
@@ -85,13 +96,15 @@ def get_user_wordlists(request):
     user_id = data.get('userId')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user = UserInfo.objects.get(id=user_id)
 
         study_list = UserStudyList.objects.filter(user_id_id=user).values_list('id', flat=True)
 
         response['ids'] = list(study_list)
         response['state'] = True
-
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 
@@ -194,7 +207,6 @@ def get_wordlists(request):
     response['state'] = False
 
     try:
-
         public_list = WordList.objects.values_list('id', flat=True)
 
         response['ids'] = list(public_list)
@@ -215,6 +227,8 @@ def update_learn_wordlist(request):
     user_id = data.get('userId')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         study_list = UserStudyList.objects.get(id=study_list_id)
         user_obj = UserInfo.objects.get(id=user_id)
         user_obj.last_study_list=study_list
@@ -223,6 +237,7 @@ def update_learn_wordlist(request):
 
         response['last_study_list'] = study_list.list_name
         response['state'] = True
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -240,6 +255,8 @@ def add_wordlist_from_official(request):
     study_list_name = data.get('name')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user = UserInfo.objects.get(id=user_id)
 
         list_num=UserStudyList.objects.filter(user_id_id=user).count()
@@ -270,6 +287,7 @@ def add_wordlist_from_official(request):
 
         response['state'] = True
         response['listId'] = to_add.id
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -341,6 +359,8 @@ def add_wordlist_from_file(request):
     words = data.get('words')
 
     try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
         user = UserInfo.objects.get(id=user_id)
 
         list_num = UserStudyList.objects.filter(user_id_id=user).count()
@@ -368,7 +388,7 @@ def add_wordlist_from_file(request):
 
         response['state'] = True
         response['listId'] = to_add.id
-
+        return wrapRes(response, user_id)
     except Exception as e:
         response['msg'] = str(e)
 

@@ -113,6 +113,7 @@ def send_email_code(request):
 
     return JsonResponse(response)
 
+'''
 def check_email_code(request):
     response = {}
     response['state'] = False
@@ -147,4 +148,4 @@ def check_email_code(request):
         response['msg'] = str(e)
 
     return JsonResponse(response)
-
+'''
