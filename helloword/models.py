@@ -18,6 +18,8 @@ class UserInfo(models.Model):
 
     cookie_token = models.CharField(max_length=128,null=True)
 
+    gpt_lock=models.CharField(max_length=128,null=True,default="")
+
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)
     token = models.CharField(max_length=32)
