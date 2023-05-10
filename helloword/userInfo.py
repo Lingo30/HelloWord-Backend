@@ -154,7 +154,7 @@ def submit_info(request):
         k=data.get('user_info')
         user = UserInfo.objects.get(id=user_id)
         user.not_unique_name = k['name']
-        user.tags = ' '.join(k['tags'])
+        user.tags = ' '.join(list(set(k['tags'])))
         user.save()
 
         response['state']=True
@@ -187,6 +187,10 @@ def submit_image(request):
 
 
         user_obj = UserInfo.objects.get(id=iid)
+
+        old_src = 'media/' + str(user_obj.user_avatar)
+        old_dst = '../backend_static/' + str(user_obj.user_avatar)
+
         user_obj.user_avatar=file
         user_obj.save()
 
@@ -198,6 +202,14 @@ def submit_image(request):
             print("复制文件失败!")
             response['msg'] = "图片上传失败!"
             return JsonResponse(response)
+
+        try:
+            if str(user_obj.user_avatar)!="user_avatar/default_avatar.jpg":
+                os.remove(old_src)
+                os.remove(old_dst)
+
+        except Exception as e:
+            print(str(e))
 
         response['url'] = 'http://' + str(ENV['HOST']) +  str(ENV['API'])  +'/static/' + str(user_obj.user_avatar)
         response['state'] = True
@@ -342,6 +354,8 @@ def cookie_login(request):
                 'wordNum': userInfo.daily_words_count,
                 'selectWordlist': userInfo.last_study_list.id
             }
+
+            print("user_id: "+str(userInfo.id)+" username: "+str(userInfo.username))
 
             return wrapNewRes(response,user_id)
 
