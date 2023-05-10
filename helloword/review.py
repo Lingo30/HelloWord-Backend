@@ -79,11 +79,22 @@ def words_to_story(request):
             return JsonResponse(response)
         else:
             user_obj = UserInfo.objects.get(id=user_id)
+
+            if user_obj.gpt_lock and user_obj.gpt_lock!="":
+                response['msg'] = '小助手正在为您服务，请等待结果返回~'
+                return JsonResponse(response)
+            user_obj.gpt_lock='story'
+            user_obj.save()
+
             words_story = WordsStory(user_id=user_obj)
             times_left = dailly_times-WordsStory.objects.filter(user_id_id = user_obj,post_time__gte=datetime.date.today()).count()
             if times_left==0:
                 response['msg'] = '今天的故事模式次数已经用完啦！明天再来吧'
                 response['last_times'] = 0
+
+                user_obj.gpt_lock = ""
+                user_obj.save()
+
                 return JsonResponse(response)
             words_story.save()
 
@@ -103,7 +114,18 @@ def words_to_story(request):
             response['last_times']=times_left
 
             response['state'] = True
+
+            user_obj.gpt_lock = ""
+            user_obj.save()
+
             return wrapRes(response, user_id)
+    except Exception as e:
+        response['msg'] = str(e)
+
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.gpt_lock = ""
+        user_obj.save()
     except Exception as e:
         response['msg'] = str(e)
 
@@ -125,6 +147,13 @@ def get_blank_text(request):
             return JsonResponse(response)
         #
         user_obj = UserInfo.objects.get(id=user_id)
+
+        if user_obj.gpt_lock and user_obj.gpt_lock != "":
+            response['msg'] = '小助手正在为您服务，请等待结果返回~'
+            return JsonResponse(response)
+        user_obj.gpt_lock = 'blank'
+        user_obj.save()
+
         times_left = dailly_times - WordsCloze.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
 
@@ -132,6 +161,8 @@ def get_blank_text(request):
         if times_left == 0:
             response['msg'] = '今天的完形填空次数已经用完啦！明天再来吧'
             response['last_times'] = 0
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
         w.save()
 
@@ -148,6 +179,8 @@ def get_blank_text(request):
             response['wordList'] = []
             response['answer'] = []
             response['originWords'] = []
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
 
             # words = ['assign', 'involve', 'skeleton', 'uncover', 'entertainment']
@@ -170,6 +203,8 @@ def get_blank_text(request):
         # 如果结果还为None，则返回错误信息
         if output == None:
             response['msg'] = '解析失败，请重新输入'
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
 
         cloze = json.loads(output)
@@ -218,11 +253,20 @@ def get_blank_text(request):
         w.save()
 
         response['state'] = True
+        user_obj.gpt_lock = ""
+        user_obj.save()
         return wrapRes(response, user_id)
 
 
     except Exception as e:
         response['state'] = False
+        response['msg'] = str(e)
+
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.gpt_lock = ""
+        user_obj.save()
+    except Exception as e:
         response['msg'] = str(e)
 
     return JsonResponse(response)
@@ -243,12 +287,21 @@ def writing_analysis(request):
         if not checkCookie(request,response,user_id):
             return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
+
+        if user_obj.gpt_lock and user_obj.gpt_lock != "":
+            response['msg'] = '小助手正在为您服务，请等待结果返回~'
+            return JsonResponse(response)
+        user_obj.gpt_lock = 'writing'
+        user_obj.save()
+
         times_left = dailly_times - WritingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
         w = WritingHistory(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的作文分析次数已经用完啦！明天再来吧'
             response['last_times'] = 0
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
         w.save()
 
@@ -261,6 +314,8 @@ def writing_analysis(request):
 
         if output == None:
             response['msg'] = '不是合法文章，请注意写作规范哦'
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
 
 
@@ -288,7 +343,16 @@ def writing_analysis(request):
         w.save()
 
         response['state'] = True
+        user_obj.gpt_lock = ""
+        user_obj.save()
         return wrapRes(response, user_id)
+    except Exception as e:
+        response['msg'] = str(e)
+
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.gpt_lock = ""
+        user_obj.save()
     except Exception as e:
         response['msg'] = str(e)
 
@@ -313,12 +377,21 @@ def sentence_analysis(request):
         if not checkCookie(request,response,user_id):
             return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
+
+        if user_obj.gpt_lock and user_obj.gpt_lock != "":
+            response['msg'] = '小助手正在为您服务，请等待结果返回~'
+            return JsonResponse(response)
+        user_obj.gpt_lock = 'sentence'
+        user_obj.save()
+
         times_left = dailly_times - ReadingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
         w = ReadingHistory(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的长难句分析次数已经用完啦！明天再来吧'
             response['last_times'] = 0
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
         w.save()
 
@@ -333,6 +406,8 @@ def sentence_analysis(request):
         # 如果结果还为None，则返回错误信息
         if output == None:
             response['msg'] = '解析失败，请重新输入'
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
 
         output = json.loads(output)
@@ -358,8 +433,17 @@ def sentence_analysis(request):
         w.save()
 
         response['state'] = True
+        user_obj.gpt_lock = ""
+        user_obj.save()
         return wrapRes(response, user_id)
 
+    except Exception as e:
+        response['msg'] = str(e)
+
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.gpt_lock = ""
+        user_obj.save()
     except Exception as e:
         response['msg'] = str(e)
 

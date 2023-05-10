@@ -24,6 +24,13 @@ def user_send(request):
         if not checkCookie(request,response,user_id):
             return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
+
+        if user_obj.gpt_lock and user_obj.gpt_lock != "":
+            response['msg'] = '小助手正在为您服务，请等待结果返回~'
+            return JsonResponse(response)
+        user_obj.gpt_lock = 'sentence'
+        user_obj.save()
+
         user_chat = ChatHistory(user_id=user_obj, message=question, type=True)
 
         times_left = dailly_times - ChatHistory.objects.filter(user_id_id=user_obj,
@@ -32,6 +39,8 @@ def user_send(request):
         if times_left == 0:
             response['last_times'] = 0
             response['msg'] = '今天的对话次数已经用完啦！明天再来吧'
+            user_obj.gpt_lock = ""
+            user_obj.save()
             return JsonResponse(response)
 
 
@@ -54,8 +63,17 @@ def user_send(request):
         response['post_time'] = gpt_chat.post_time
 
         response['state'] = True
+        user_obj.gpt_lock = ""
+        user_obj.save()
         return wrapRes(response, user_id)
 
+    except Exception as e:
+        response['msg'] = str(e)
+
+    try:
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.gpt_lock = ""
+        user_obj.save()
     except Exception as e:
         response['msg'] = str(e)
 
