@@ -41,6 +41,8 @@ urlpatterns = [
     path("login/", userview.login),
     path("register/", userview.register),
     path("cookie_login/", userview.cookie_login),
+    path("get_verify_img/", userview.get_verify_img),
+
 
     path("submit_image/",userview.submit_image),
     path("change_pwd/",userview.change_pwd),

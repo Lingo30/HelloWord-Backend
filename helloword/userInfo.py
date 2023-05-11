@@ -225,12 +225,39 @@ def gen_token():
     # 返回一个随机字符串，生成4位验证码
     return ''.join(random.choices('0123456789abcdefghigklmnopqrstuvwxyz', k=24))
 
+dataKV=[]
+codeMap = {}
+with open('../outputKV.json') as jsonKV:
+    dataKV = json.load(jsonKV)
+    for i in dataKV:
+        codeMap[i['key']]=i['value']
+def get_verify_img(request):
+    response = {}
+    response['state'] = False
+    try:
+        k = random.randint(0,199)
+        codekey = dataKV[k]['key']
+        img_url = 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/checkcode/'+ str(k).zfill(5) +'_' + codekey +  '.jpg'
+        response['img'] = img_url
+        response['imgCode'] = codekey
+        response['state'] = True
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
 def login(request):
     response = {}
     response['state'] = False
     data = json.loads(request.body.decode())
     print(data)
     try:
+        value = data.get('verify')
+        key = data.get('imgCode')
+
+        if codeMap.get(key,default='') != value:
+            response['msg'] = '验证码错误'
+
         userInfo = UserInfo.objects.filter(username=data.get('name'))
         if userInfo.count() == 0:
             response['msg'] = '用户名不存在'
@@ -269,6 +296,11 @@ def register(request):
         response['msg'] = '用户名不能为空'
 
     try:
+        value = data.get('verify')
+        key = data.get('imgCode')
+
+        if codeMap.get(key, default='') != value:
+            response['msg'] = '验证码错误'
 
         email_addr = data.get('email')
         code = data.get('code')
