@@ -235,8 +235,8 @@ def get_verify_img(request):
     response = {}
     response['state'] = False
     try:
-        k = random.randint(0,199)
-        codekey = dataKV[k]['key']
+        k = random.randint(1,200)
+        codekey = dataKV[k-1]['key']
         img_url = 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/checkcode/'+ str(k).zfill(5) +'_' + codekey +  '.jpg'
         response['img'] = img_url
         response['imgCode'] = codekey
@@ -255,7 +255,7 @@ def login(request):
         value = data.get('verify')
         key = data.get('imgCode')
 
-        if codeMap.get(key,default='') != value:
+        if codeMap.get(key,'') != value:
             response['msg'] = '验证码错误'
 
         userInfo = UserInfo.objects.filter(username=data.get('name'))

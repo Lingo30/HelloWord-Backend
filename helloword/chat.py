@@ -7,6 +7,7 @@ from helloword.models import UserInfo
 from chatgpt import client
 from chatgpt.tools import chat
 import datetime
+import re
 
 from helloword.userInfo import checkCookie, wrapRes
 
@@ -92,10 +93,11 @@ def get_log_history(request):
         user_obj=UserInfo.objects.get(id=user_id)
         log_history = ChatHistory.objects.filter(user_id_id=user_obj)
         history = []
+        pattern = r'\..{6}'
         for item in log_history:
             cur = {
                 'type' : item.type,
-                'time' : item.post_time,
+                'time' : re.sub(pattern,"",str(item.post_time).replace('T', ' ')),
                 'content' : item.message
             }
             history.append(cur)
