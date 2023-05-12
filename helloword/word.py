@@ -9,6 +9,88 @@ from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,User
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 from helloword.userInfo import checkCookie, wrapRes
 
+def get_info_by_id(word_id,response):
+    try:
+        base_word = Word.objects.get(id=word_id)
+
+        example_sen = '暂无例句'
+        example_objs = WordExample.objects.filter(word_id_id=base_word)
+        example_count = example_objs.count()
+        if example_count > 0:
+            # TODO
+            p = random.randint(0, example_count - 1)
+            example_sen = example_objs[p].example_id.example_sentence + '\n' + example_objs[
+                p].example_id.example_translation
+
+        synonyms_list = []
+        antonyms_list = []
+
+        word_relation_objs = WordRelation.objects.filter(word_id_id=base_word)
+        for k in word_relation_objs:
+            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
+                cur = {
+                    'word_id': k.related_word_id.id,
+                    'word': k.related_word_id.word,
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n", "\n").replace("\\r", ""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
+                }
+                synonyms_list.append(cur)
+            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
+                cur = {
+                    'word_id': k.related_word_id.id,
+                    'word': k.related_word_id.word,
+                    'definition_cn': k.related_word_id.definition_cn.replace("\\n", "\n").replace("\\r", ""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
+                }
+                antonyms_list.append(cur)
+
+        word_relation_objs = WordRelation.objects.filter(related_word_id_id=base_word)
+        for k in word_relation_objs:
+            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
+                cur = {
+                    'word_id': k.word_id.id,
+                    'word': k.word_id.word,
+                    'definition_cn': k.word_id.definition_cn.replace("\\n", "\n").replace("\\r", ""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
+                }
+                synonyms_list.append(cur)
+            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
+                cur = {
+                    'word_id': k.word_id.id,
+                    'word': k.word_id.word,
+                    'definition_cn': k.word_id.definition_cn.replace("\\n", "\n").replace("\\r", ""),
+                    'phonetic_symbol': k.related_word_id.phonetic_symbol
+                }
+                antonyms_list.append(cur)
+
+        response['synonyms'] = synonyms_list
+        response['antonyms'] = antonyms_list
+        response['example'] = example_sen
+        response['state'] = True
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+def get_search_word(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode())
+    try:
+        word_string = data.get('word')
+        response['word'] = word_string
+        search_word_list = Word.objects.filter(word=word_string)
+        if search_word_list.count() == 0:
+            response['msg'] = '查询单词不存在'
+            return JsonResponse(response)
+        fetchword = search_word_list[0]
+        response['phonetic_symbol'] = fetchword.phonetic_symbol
+        response['definition_cn'] = fetchword.definition_cn.replace("\\n", "\n").replace("\\r", "")
+        get_info_by_id(fetchword.id, response)
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def reset_study_list(request):
     response = {}
@@ -35,61 +117,7 @@ def get_word_releation(request):
     word_id = data.get('word_id')
 
     try:
-        base_word = Word.objects.get(id=word_id)
-
-        example_sen='暂无例句'
-        example_objs = WordExample.objects.filter(word_id_id=base_word)
-        example_count = example_objs.count()
-        if example_count>0:
-            # TODO
-            p=random.randint(0,example_count-1)
-            example_sen = example_objs[p].example_id.example_sentence +'\n'+ example_objs[p].example_id.example_translation
-
-        synonyms_list=[]
-        antonyms_list=[]
-
-        word_relation_objs = WordRelation.objects.filter(word_id_id=base_word)
-        for k in word_relation_objs:
-            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
-                cur = {
-                    'word_id': k.related_word_id.id,
-                    'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
-                    'phonetic_symbol': k.related_word_id.phonetic_symbol
-                }
-                synonyms_list.append(cur)
-            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
-                cur = {
-                    'word_id': k.related_word_id.id,
-                    'word': k.related_word_id.word,
-                    'definition_cn': k.related_word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
-                    'phonetic_symbol': k.related_word_id.phonetic_symbol
-                }
-                antonyms_list.append(cur)
-
-        word_relation_objs = WordRelation.objects.filter(related_word_id_id=base_word)
-        for k in word_relation_objs:
-            if k.relation_type == 'synonym' and len(synonyms_list) < 3:
-                cur = {
-                    'word_id': k.word_id.id,
-                    'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
-                    'phonetic_symbol': k.related_word_id.phonetic_symbol
-                }
-                synonyms_list.append(cur)
-            elif k.relation_type == 'antonym' and len(antonyms_list) < 3:
-                cur = {
-                    'word_id': k.word_id.id,
-                    'word': k.word_id.word,
-                    'definition_cn': k.word_id.definition_cn.replace("\\n","\n").replace("\\r",""),
-                    'phonetic_symbol': k.related_word_id.phonetic_symbol
-                }
-                antonyms_list.append(cur)
-
-        response['synonyms'] = synonyms_list
-        response['antonyms'] = antonyms_list
-        response['example'] = example_sen
-        response['state'] = True
+        get_info_by_id(word_id,response)
 
     except Exception as e:
         response['msg'] = str(e)
