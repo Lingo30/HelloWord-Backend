@@ -237,7 +237,7 @@ def get_verify_img(request):
     try:
         k = random.randint(1,200)
         codekey = dataKV[k-1]['key']
-        img_url = 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/checkcode/'+ str(k).zfill(5) +'_' + codekey +  '.jpg'
+        img_url = 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/checkcode/'+ str(k-1).zfill(5) +'_' + codekey +  '.jpg'
         response['img'] = img_url
         response['imgCode'] = codekey
         response['state'] = True
