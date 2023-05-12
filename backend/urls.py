@@ -73,6 +73,7 @@ urlpatterns = [
     path("get_word_releation/", wordview.get_word_releation),
     path("group_word_learn_save/", wordview.group_word_learn_save),
     path("get_group_words_in_list/", wordview.get_group_words_in_list),
+    path("get_search_word/", wordview.get_search_word),
 
     #path("reset_study_list/", wordview.reset_study_list),
 
