@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 import datetime
-from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo,EmailToken
+from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo,EmailToken,EmailResetToken
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,UserStudyWordInfo
 from pathlib import Path
 import sys
@@ -257,6 +257,7 @@ def login(request):
 
         if codeMap.get(key,'') != value:
             response['msg'] = '验证码错误'
+            return JsonResponse(response)
 
         userInfo = UserInfo.objects.filter(username=data.get('name'))
         if userInfo.count() == 0:
@@ -299,8 +300,9 @@ def register(request):
         value = data.get('verify')
         key = data.get('imgCode')
 
-        if codeMap.get(key, default='') != value:
+        if codeMap.get(key, '') != value:
             response['msg'] = '验证码错误'
+            return JsonResponse(response)
 
         email_addr = data.get('email')
         code = data.get('code')
@@ -367,6 +369,55 @@ def register(request):
 
     return JsonResponse(response)
 
+
+def reset_password(request):
+    response = {}
+    response['state'] = False
+    try:
+        data = json.loads(request.body.decode())
+
+        newname = data.get('name')
+        if newname == '':
+            response['msg'] = '用户名不能为空'
+
+        value = data.get('verify')
+        key = data.get('imgCode')
+
+        if codeMap.get(key, '') != value:
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
+
+        email_addr = data.get('email')
+        code = data.get('code')
+
+        has_user = UserInfo.objects.filter(username=newname)
+        if has_user.count() == 0:
+            response['msg'] = '用户名不存在'
+            return JsonResponse(response)
+        elif has_user[0].email != email_addr:
+            response['msg'] = '输入邮箱与用户名不匹配'
+            return JsonResponse(response)
+
+        t = EmailResetToken.objects.filter(email=email_addr, token=code)
+        if t.count() != 0:
+            email_token=t[0]
+            if datetime.datetime.now() - email_token.gen_time > datetime.timedelta(minutes=20):
+                response['msg'] = '注册码已失效，请重试'
+                return JsonResponse(response)
+
+        else:
+            response['msg'] = '邮箱验证码错误'
+            return JsonResponse(response)
+
+        userInfo = UserInfo.objects.get(username=newname)
+        userInfo.password_hash=data.get('password')
+        userInfo.save()
+        response['state'] = True
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def cookie_login(request):
     response = {}
