@@ -7,11 +7,13 @@ import smtplib
 import random
 import datetime
 
+from helloword.userInfo import codeMap
+
 
 from django.http import JsonResponse
 
 import json
-from helloword.models import UserInfo,EmailToken
+from helloword.models import UserInfo,EmailToken,EmailResetToken
 
 from pathlib import Path
 import sys
@@ -104,6 +106,67 @@ def send_email_code(request):
             email_token.save()
         else:
             email_token = EmailToken(email_addr=email_addr,
+                                     token=code)
+            email_token.save()
+
+        response['state']=True
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
+def send_reset_password_email_code(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+
+        newname = data.get('name')
+        if newname == '':
+            response['msg'] = '用户名不能为空'
+            return JsonResponse(response)
+
+
+        value = data.get('verify')
+        key = data.get('imgCode')
+
+        if codeMap.get(key, '') != value:
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
+
+        email_addr = data.get('email')
+
+        has_user = UserInfo.objects.filter(username=newname)
+        if has_user.count() == 0:
+            response['msg'] = '用户名不存在'
+            return JsonResponse(response)
+        elif has_user[0].email != email_addr:
+            response['msg'] = '输入邮箱与用户名不匹配'
+            return JsonResponse(response)
+
+
+        t = EmailResetToken.objects.filter(email=email_addr)
+        if t.count() != 0:
+            email_token=t[0]
+            if datetime.datetime.now() - email_token.gen_time < datetime.timedelta(minutes=20):
+                response['msg'] = '邮箱验证码已发送'
+                return JsonResponse(response)
+            try:
+                code = send(email_addr)
+            except Exception as e:
+                response['msg'] = '邮件格式错误 请重试'
+                return JsonResponse(response)
+            email_token.token=code
+            email_token.save()
+        else:
+            try:
+                code = send(email_addr)
+            except Exception as e:
+                response['msg'] = '邮件格式错误 请重试'
+                return JsonResponse(response)
+            email_token = EmailResetToken(email=email_addr,
                                      token=code)
             email_token.save()
 

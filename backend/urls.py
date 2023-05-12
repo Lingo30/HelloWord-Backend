@@ -51,6 +51,8 @@ urlpatterns = [
     path("submit_info/",userview.submit_info),
     #path("check_email_code/",emailview.check_email_code),
     path("send_email_code/",emailview.send_email_code),
+    path("reset_password/", userview.reset_password),
+    path("send_reset_password_email_code/", emailview.send_reset_password_email_code),
 
     # wordlist
     path("get_user_wordlists/",listview.get_user_wordlists),

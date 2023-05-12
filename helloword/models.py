@@ -26,6 +26,11 @@ class EmailToken(models.Model):
     gen_time = models.DateTimeField(auto_now=True)
     has_register = models.BooleanField(default=False,null=True)
 
+class EmailResetToken(models.Model):
+    email = models.CharField(max_length=64, unique=True)
+    token = models.CharField(max_length=32)
+    gen_time = models.DateTimeField(auto_now=True)
+
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")
 
