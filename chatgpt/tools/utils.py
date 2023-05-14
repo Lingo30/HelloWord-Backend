@@ -24,6 +24,14 @@ def extract_json(str):
 def completion_with_backoff(**kwargs):
     return openai.ChatCompletion.create(**kwargs)
 
+def create_images(prompt, n=1, size="1024x1024"):
+    response = openai.Image.create(
+        prompt=prompt,
+        n=n,
+        size=size
+    )
+    return response['data']
+
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     """Returns the number of tokens used by a list of messages."""
     try:

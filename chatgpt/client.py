@@ -7,6 +7,7 @@ import os
 ENV={}
 with open('env.json') as env:
     ENV = json.load(env)
+
 class Clinet(object):
     def __init__(self, api_key=ENV['GPTKEY'], model="gpt-3.5-turbo-0301"):
         openai.api_key = api_key
@@ -18,6 +19,14 @@ class Clinet(object):
         self.frequency_penalty = 0
         self.presence_penalty = 0
         self.messages = []
+    
+    def create_image(self, prompt, n=1, size="1024x1024"):
+        response = openai.Image.create(
+            prompt=prompt,
+            n=n,
+            size=size
+        )
+        return response['data']
 
     def send_message(self, message):
         if type(message) == str:
