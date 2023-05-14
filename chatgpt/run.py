@@ -4,13 +4,13 @@ from random import shuffle
 import requests
 import time
 
-from tools.utils import num_tokens_from_messages, completion_with_backoff
-from tools.vocabulary import gen_story_from_words, gen_cloze_from_words, gen_example_from_words
+from tools.utils import num_tokens_from_messages, completion_with_backoff, create_images
+from tools.vocabulary import gen_story_from_words, gen_cloze_from_words, gen_example_from_words, gen_image_prompt_from_word
 from tools.wordlist import gen_wordlist_from_keywords, gen_wordlist_from_passage
 from tools.reading import analyze_sentence_in_passage, analyze_sentence_alone
-from tools.writing import gen_essay_from_topic, analyze_essay_from_topic, revise_essay_from_topic
+from tools.writing import gen_essay_from_topic, analyze_essay, revise_essay_from_topic
 openai.api_key = "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" 
-temperature = 0
+temperature = 0.5
 model = "gpt-3.5-turbo-0301"
 input = """The natural environment is a precious resource that we must protect and improve for future generations. As individuals, we can make a significant impact on the environment by making conscious choices in our daily lives. While there are many actions we can take to help the environment, one of the most useful actions is to walk or bicycle instead of driving a car to work or school.
 
@@ -26,7 +26,7 @@ In conclusion, protecting and improving the natural environment is a responsibil
 """
 input2 = "Many people want to protect and improve the natural environment. Which ONE of the following three actions is MOST useful for individuals to do in their daily lives if they want to help the environment? Why?\n-Walking or bicycling instead of driving a car to work or school\n-Recycling and reusing objects instead of throwing them in the trash (rubbish) can\n-Buying locally grown, organic foods (grown without pesticides)"
 tags = ["adventure", "fantasy", "science fiction"]
-messages = revise_essay_from_topic(input, input2)
+messages = gen_image_prompt_from_word("apple", tags=tags)
 print(messages[0]["content"])
 print(f"{num_tokens_from_messages(messages, model)} prompt tokens counted.")
 breakpoint()
@@ -35,3 +35,5 @@ rsp = completion_with_backoff(model=model, messages=messages, temperature=temper
 end = time.perf_counter()
 print(f'request time: {end -start}')
 print(rsp['choices'][0]["message"]["content"])
+img = create_images(rsp['choices'][0]["message"]["content"])
+print(img)

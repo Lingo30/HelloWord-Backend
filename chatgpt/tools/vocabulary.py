@@ -41,3 +41,13 @@ def gen_example_from_words(words, tags=None):
         {"role": "user", "content": input_prompt + "Input words: " + words_prompt},
     ]
     return messages
+
+def gen_image_prompt_from_word(word, tags=None):
+    tags_prompt = random.choice(tags) if tags else "None"
+    input_prompt = 'As an AI language model, your task is to construct descriptive text inputs for OpenAI\'s DALLE model that will generate vivid and illustrative images. Given an English word as input, craft a detailed and engaging text prompt that instructs DALLE to produce images that are clear, contextually relevant, and intuitively representative of the input word, thereby facilitating the learning process.\nHere are some examples:\nWord: "Apple", Text Input: "A bright, shiny red apple resting on a sunlit kitchen table."\nWord: "Bicycle", Text Input: "A vintage bicycle casually parked by a bustling city park on a sunny day."\nWord: "Elephant", Text Input: "A majestic elephant lumbering across the expansive plains of the African savannah."\nWord: "Rain", Text Input: "A serene city street bathed in the gentle glow of street lamps, as raindrops fall softly at night."\n'
+    if tags:
+        input_prompt = input_prompt + 'Design the image prompt adhering to the themes of: ' + tags_prompt + '.'
+    messages = [
+        {"role": "user", "content": input_prompt + "\nWord: " + word + "\n"},
+    ]
+    return messages
