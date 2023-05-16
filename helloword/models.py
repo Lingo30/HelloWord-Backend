@@ -19,6 +19,7 @@ class UserInfo(models.Model):
     cookie_token = models.CharField(max_length=128,null=True)
 
     gpt_lock=models.CharField(max_length=128,null=True,default="")
+    user_type = models.CharField(max_length=128, null=True, default="")
 
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)
@@ -33,6 +34,7 @@ class EmailResetToken(models.Model):
 
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")
+    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE,null=True)
 
 class Word(models.Model):
     word = models.CharField(max_length=64, unique=True)
@@ -56,6 +58,7 @@ class WordList(models.Model):
     gen_type = models.IntegerField(null=True)
 
     list_author = models.ForeignKey("UserInfo", null = True, on_delete=models.SET_NULL)
+    create_type = models.CharField(max_length=128, null=True, default="")
 
 class WordListItem(models.Model):
     word_list_id = models.ForeignKey("WordList", on_delete=models.CASCADE)
@@ -78,6 +81,7 @@ class UserStudyList(models.Model):
 
     list_author = models.ForeignKey("UserInfo", related_name='create',null=True, on_delete=models.SET_NULL)
     has_done = models.BooleanField(null=True, default=False)
+    create_type = models.CharField(max_length=128, null=True, default="")
 
 class UserStudyListItem(models.Model):
     user_study_list_id = models.ForeignKey("UserStudyList", on_delete=models.CASCADE)
@@ -150,3 +154,12 @@ class Feedback(models.Model):
     modules = models.CharField(max_length=512,default="")
     content = models.CharField(max_length=1024)
     post_time = models.DateTimeField(auto_now=True, null=True)
+
+class PublicListCheck(models.Model):
+    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    user_study_list_id = models.ForeignKey("UserStudyList", null=True, on_delete=models.SET_NULL)
+    post_time = models.DateTimeField(auto_now_add=True)
+    check_time = models.DateTimeField(auto_now=True)
+    check_status = models.CharField(max_length=128, null=True, default="user_submit")
+    public_list_id = models.ForeignKey("WordList", on_delete=models.CASCADE,null=True)
+
