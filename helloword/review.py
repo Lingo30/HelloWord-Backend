@@ -99,7 +99,7 @@ def words_to_story(request):
             words_story.save()
 
             message = vocabulary.gen_story_from_words(words)
-            story = client.Clinet().send_message(message)
+            story = client.Client().send_message(message)
             answer = ' '.join(words)
 
 
@@ -193,12 +193,12 @@ def get_blank_text(request):
                 words.append(word)
 
         message = vocabulary.gen_cloze_from_words(words)
-        outputk = client.Clinet().send_message(message)
+        outputk = client.Client().send_message(message)
 
         output = utils.extract_json(outputk)
         # 如果解析结果为None，则重新执行一次
         if output == None:
-            outputk = client.Clinet().send_message(message)
+            outputk = client.Client().send_message(message)
             output = utils.extract_json(outputk)
         # 如果结果还为None，则返回错误信息
         if output == None:
@@ -306,7 +306,7 @@ def writing_analysis(request):
         w.save()
 
         message = writing.analyze_essay(user_article)
-        outputk = client.Clinet().send_message(message)
+        outputk = client.Client().send_message(message)
         output = utils.extract_json(outputk)
 
         print(output)
@@ -397,11 +397,11 @@ def sentence_analysis(request):
 
         # TODO 用翻译api或gpt分析sentence，句子信息在sentence，分析结果输出到output
         message = reading.analyze_sentence_alone(user_sentence)
-        outputk = client.Clinet().send_message(message)
+        outputk = client.Client().send_message(message)
         output = utils.extract_json(outputk)
         # 如果解析结果为None，则重新执行一次
         if output == None:
-            outputk = client.Clinet().send_message(message)
+            outputk = client.Client().send_message(message)
             output = utils.extract_json(outputk)
         # 如果结果还为None，则返回错误信息
         if output == None:

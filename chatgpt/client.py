@@ -8,7 +8,7 @@ ENV={}
 with open('env.json') as env:
     ENV = json.load(env)
 
-class Clinet(object):
+class Client(object):
     def __init__(self, api_key=ENV['GPTKEY'], model="gpt-3.5-turbo-0301"):
         openai.api_key = api_key
         self.model = model
@@ -27,6 +27,10 @@ class Clinet(object):
             size=size
         )
         return response['data']
+    
+    def transcribe(self, audio):
+        transcript = openai.Audio.transcribe("whisper-1", audio)
+        return transcript
 
     def send_message(self, message):
         if type(message) == str:
@@ -49,9 +53,10 @@ class Clinet(object):
         )
         self.messages.append({"role": "assistant", "content": results['choices'][0]["message"]["content"]})
         return results['choices'][0]["message"]["content"]
+    
 
 if __name__ == "__main__":
-    client = Clinet()
+    client = Client()
     while True:
         message = input("You: ")
         if message == "quit":

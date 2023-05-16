@@ -48,7 +48,7 @@ def user_send(request):
         user_chat.save()
 
         messages = chat.chat(question)
-        gpt_respond = client.Clinet().send_message(messages)
+        gpt_respond = client.Client().send_message(messages)
 
 
         gpt_chat = ChatHistory(user_id=user_obj, message=gpt_respond, type=False)
