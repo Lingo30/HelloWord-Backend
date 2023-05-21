@@ -45,7 +45,7 @@ def get_wordList_smart_from_file(request):
         message = wordlist.gen_wordlist_from_passage(content)
         rcv_message = client.Client().send_message(message)
         print(rcv_message)
-        extract_words = str(re.findall(r"[\[](.*?)[\]]", rcv_message)[0]).split(' ,')
+        extract_words = str(re.findall(r"[\[](.*?)[\]]", rcv_message)[0]).split(', ')
 
         lower_extract_words=[]
         for i in extract_words:
