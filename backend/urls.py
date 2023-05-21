@@ -42,6 +42,7 @@ urlpatterns = [
 
     # personalService
     path("get_wordList_smart_from_file/", personalView.get_wordList_smart_from_file),
+    path("get_wordlist_from_tags/",personalView.get_wordlist_from_tags),
 
     # publicList
     path("submit_official_wordlist/", publicListView.submit_official_wordlist),
