@@ -42,15 +42,16 @@ def get_wordList_smart_from_file(request):
             content=' '.join(words)
             print(content)
 
-        message = wordlist.gen_wordlist_from_passage(words)
+        message = wordlist.gen_wordlist_from_passage(content)
         rcv_message = client.Client().send_message(message)
-        extract_words = str(re.findall(r"[(](.*?)[)]", rcv_message)[0]).split(',')
+        print(rcv_message)
+        extract_words = str(re.findall(r"[\[](.*?)[\]]", rcv_message)[0]).split(',')
 
         lower_extract_words=[]
         for i in extract_words:
             lower_extract_words.append(i.lower())
 
-        response['words']=lower_extract_words
+        response['words']=list(set(lower_extract_words))
 
         ret = []
         word_list = Word.objects.filter(word__in=lower_extract_words)
