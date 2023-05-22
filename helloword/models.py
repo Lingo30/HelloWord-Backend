@@ -59,6 +59,7 @@ class WordList(models.Model):
 
     list_author = models.ForeignKey("UserInfo", null = True, on_delete=models.SET_NULL)
     create_type = models.CharField(max_length=128, null=True, default="")
+    # create_type和description
 
 class WordListItem(models.Model):
     word_list_id = models.ForeignKey("WordList", on_delete=models.CASCADE)
@@ -158,11 +159,30 @@ class Feedback(models.Model):
     content = models.CharField(max_length=1024)
     post_time = models.DateTimeField(auto_now=True, null=True)
 
+class BroadcastMessage(models.Model):
+    message = models.CharField(max_length=1024)
+    post_time = models.DateTimeField(auto_now_add=True)
+
+class UserMessage(models.Model):
+    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    message = models.CharField(max_length=1024)
+    post_time = models.DateTimeField(auto_now_add=True)
+    has_read = models.BooleanField(default=False)
+
 class PublicListCheck(models.Model):
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    # 作者
     user_study_list_id = models.ForeignKey("UserStudyList", null=True, on_delete=models.SET_NULL)
+    # 对于已经提交审核过的词单，删除掉未被审核与拒绝审核的审核信息
+    # 对于接受审核的词单，将user_study_list_id字段设置为null。如果展示词单详细信息，可以使用public_list_id
     post_time = models.DateTimeField(auto_now_add=True)
+    # 用户提交审核时间
     check_time = models.DateTimeField(auto_now=True)
+    # 管理员审核时间
     check_status = models.CharField(max_length=128, null=True, default="user_submit")
+    # user_submit  accept  reject
     public_list_id = models.ForeignKey("WordList", on_delete=models.CASCADE,null=True)
+    # 审核accept后，拉取的官方词单的id；默认官方词单不会被删除
+    send_message = models.ForeignKey("UserMessage", null=True, on_delete=models.SET_NULL)
+    # 审核意见
 

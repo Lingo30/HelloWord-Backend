@@ -81,7 +81,7 @@ def get_wordList_smart_from_file(request):
                 else:
                     page_num += 1
                 mv_chinese = re.sub('[\u4e00-\u9fa5]', '', page.extract_text())
-                words.append(re.sub("[{}]+".format(punctuation), "", mv_chinese))
+                words.append(re.sub("[{}]+".format(punctuation), " ", mv_chinese))
 
             content=' '.join(words)
             print(content)

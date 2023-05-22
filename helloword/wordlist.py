@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 import datetime
-from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo
+from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,PublicListCheck
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 from helloword.userInfo import checkCookie, wrapRes
 
@@ -189,6 +189,18 @@ def edit_wordlists(request):
         # delete
         for k in deleteLists:
             study_list = UserStudyList.objects.get(id=k)
+
+            # 对于已经提交审核过的词单，删除掉未被审核与拒绝审核的审核信息
+            # 对于接受审核的词单，将user_study_list_id字段设置为null。如果展示词单详细信息，可以使用public_list_id
+            cancel_submit = PublicListCheck.objects.filter(user_study_list_id_id=study_list)
+            cancel_ids = []
+            for j in cancel_submit:
+                if j.check_status != 'accept':
+                    cancel_ids.append(j.id)
+            for j in cancel_ids:
+                to_delete = PublicListCheck.objects.get(id=j)
+                to_delete.delete()
+
             study_list.delete()
 
         # update
