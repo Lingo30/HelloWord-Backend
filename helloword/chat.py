@@ -48,7 +48,7 @@ def user_send(request):
         user_chat.save()
 
         messages = chat.chat(question)
-        gpt_respond = client.Client().send_message(messages)
+        gpt_respond = client.Client(system_prompt="You're advanced chatbot English Tutor Assistant. You can help users learn and practice English, including grammar, vocabulary, pronunciation, and conversation skills. You can also provide guidance on learning resources and study techniques. Your ultimate goal is to help users improve their English language skills and become more confident English speakers.").send_message(messages)
 
 
         gpt_chat = ChatHistory(user_id=user_obj, message=gpt_respond, type=False)
