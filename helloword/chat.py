@@ -10,7 +10,7 @@ import datetime
 import re
 
 from helloword.userInfo import checkCookie, wrapRes
-
+from helloword.preload import tts
 dailly_times = 7
 def user_send(request):
     response = {}
