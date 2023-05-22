@@ -9,7 +9,7 @@ with open('env.json') as env:
     ENV = json.load(env)
 
 class Client(object):
-    def __init__(self, api_key=ENV['GPTKEY'], model="gpt-3.5-turbo-0301"):
+    def __init__(self, api_key=ENV['GPTKEY'], model="gpt-3.5-turbo-0301", system_prompt=None):
         openai.api_key = api_key
         self.model = model
         self.temperature = 0.7
@@ -18,7 +18,8 @@ class Client(object):
         self.stream = False
         self.frequency_penalty = 0
         self.presence_penalty = 0
-        self.messages = []
+        self.system_prompt = system_prompt
+        self.messages = [] if system_prompt is None else [{"role": "system", "content": system_prompt}]
     
     def create_image(self, prompt, n=1, size="1024x1024"):
         response = openai.Image.create(
@@ -63,6 +64,9 @@ class Client(object):
         )
         self.messages.append({"role": "assistant", "content": results['choices'][0]["message"]["content"]})
         return results['choices'][0]["message"]["content"]
+    
+    def clear(self):
+        self.messages = [] if self.system_prompt is None else [{"role": "system", "content": self.system_prompt}]
     
 
 if __name__ == "__main__":
