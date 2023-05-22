@@ -82,6 +82,9 @@ class UserStudyList(models.Model):
     list_author = models.ForeignKey("UserInfo", related_name='create',null=True, on_delete=models.SET_NULL)
     has_done = models.BooleanField(null=True, default=False)
     create_type = models.CharField(max_length=128, null=True, default="")
+    # create_type 由于保证alpha已有数据的一致性，当create_type='private'的时候表示用户新建立的私人词单。或者以往数据list_author=null为私人词单
+    # 官方词单create_type='official'，或者为null
+    # alpha阶段数据中，私人词单的list_auther为user_id，公共拉取的词单的list_auther为null或”“
 
 class UserStudyListItem(models.Model):
     user_study_list_id = models.ForeignKey("UserStudyList", on_delete=models.CASCADE)
