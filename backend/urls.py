@@ -32,6 +32,7 @@ from helloword import email_send as emailview
 from helloword import personalService as personalView
 from helloword import publicList as publicListView
 from helloword import reviewHistory as reviewHistoryView
+from helloword import Message as messageView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -46,6 +47,13 @@ urlpatterns = [
 
     # publicList
     path("submit_official_wordlist/", publicListView.submit_official_wordlist),
+    path("get_submit_wordlist/", publicListView.get_submit_wordlist),
+    path("reject_submit_wordlist/",publicListView.reject_submit_wordlist),
+    path("accept_submit_wordlist/",publicListView.accept_submit_wordlist),
+
+    # message
+    path("send_to_all/",messageView.send_to_all),
+    path("send_message_to_user/",messageView.send_message_to_user),
 
     # reviewHistory
     path("get_record_info/",reviewHistoryView.get_record_info),
@@ -59,6 +67,7 @@ urlpatterns = [
     path("register/", userview.register),
     path("cookie_login/", userview.cookie_login),
     path("get_verify_img/", userview.get_verify_img),
+    path("adminLogin/", userview.adminLogin),
 
 
     path("submit_image/",userview.submit_image),

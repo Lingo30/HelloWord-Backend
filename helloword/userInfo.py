@@ -286,6 +286,49 @@ def login(request):
     return JsonResponse(response)
 
 
+def adminLogin(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode())
+    print(data)
+    try:
+        value = data.get('verify')
+        key = data.get('imgCode')
+
+        if codeMap.get(key,'') != value:
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
+
+        userInfo = UserInfo.objects.filter(username=data.get('name'))
+        if userInfo.count() == 0:
+            response['msg'] = '用户名不存在'
+
+        elif userInfo.count() == 1:
+            if userInfo[0].password_hash == data.get('password'):
+                if userInfo[0].user_type and userInfo[0].user_type == 'admin':
+
+                    response['state'] = True
+                    response['data'] = {
+                        'uid': userInfo[0].id,
+                        'wordNum': userInfo[0].daily_words_count,
+                        'selectWordlist': userInfo[0].last_study_list.id
+                    }
+
+                    return wrapNewRes(response, userInfo[0].id)
+                else:
+                    response['msg'] = '没有管理员权限'
+            else:
+                response['msg'] = '密码错误'
+
+        else:
+            response['msg'] = '登录用户名重复，请联系平台管理员'
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
 def register(request):
     response = {}
     response['state'] = False
