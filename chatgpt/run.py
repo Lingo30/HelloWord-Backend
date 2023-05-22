@@ -26,7 +26,7 @@ In conclusion, protecting and improving the natural environment is a responsibil
 """
 input2 = "Many people want to protect and improve the natural environment. Which ONE of the following three actions is MOST useful for individuals to do in their daily lives if they want to help the environment? Why?\n-Walking or bicycling instead of driving a car to work or school\n-Recycling and reusing objects instead of throwing them in the trash (rubbish) can\n-Buying locally grown, organic foods (grown without pesticides)"
 tags = ["adventure", "fantasy", "science fiction"]
-messages = gen_image_prompt_from_word("apple", tags=tags)
+messages = gen_wordlist_from_keywords(tags)
 print(messages[0]["content"])
 print(f"{num_tokens_from_messages(messages, model)} prompt tokens counted.")
 breakpoint()
@@ -35,5 +35,5 @@ rsp = completion_with_backoff(model=model, messages=messages, temperature=temper
 end = time.perf_counter()
 print(f'request time: {end -start}')
 print(rsp['choices'][0]["message"]["content"])
-img = create_images(rsp['choices'][0]["message"]["content"])
-print(img)
+# img = create_images(rsp['choices'][0]["message"]["content"])
+# # print(img)
