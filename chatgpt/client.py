@@ -1,5 +1,5 @@
 import openai
-from chatgpt.tools.utils import completion_with_backoff, num_tokens_from_messages
+from chatgpt.tools.utils import completion_with_backoff, num_tokens_from_messages, truncate_text
 import json
 from pathlib import Path
 import sys
@@ -13,7 +13,7 @@ class Client(object):
         openai.api_key = api_key
         self.model = model
         self.temperature = 0.7
-        self.max_tokens = 2048
+        self.max_tokens = 4096
         self.top_p = 1
         self.stream = False
         self.frequency_penalty = 0
@@ -42,6 +42,16 @@ class Client(object):
         else:
             raise TypeError("message must be a string, dict, or list of dicts")
         
+        num_tokens = num_tokens_from_messages(self.messages, self.model)
+        if num_tokens > self.max_tokens:
+            while len(self.messages) > 1:
+                self.messages.pop(0)
+                num_tokens = num_tokens_from_messages(self.messages, self.model)
+                if num_tokens <= self.max_tokens:
+                    break
+            if num_tokens > self.max_tokens:
+                self.messages[0]["content"] = truncate_text(self.messages[0]["content"], self.max_tokens, self.model)
+
         results = completion_with_backoff(
             model=self.model,
             messages=self.messages,
