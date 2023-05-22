@@ -125,9 +125,13 @@ def get_wordlist_info(request):
         response['creator'] = study_list.list_author.username if study_list.list_author else 'HelloWord团队'
         response['learned'] = UserStudyListItem.objects.filter(user_study_list_id_id = study_list,word_id__in=UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id')).count()
 
-        print(UserStudyWordInfo.objects.filter(user_id=study_list.user_id).values('word_id'))
         date = str(study_list.last_study_date)
         response['date'] = {'month':Mon[int(date[5:7])-1],'day':date[8:10]}
+        response['official'] = True
+        if study_list.create_type and study_list.create_type == 'private':
+            response['official'] = False
+        elif study_list.list_author:
+            response['official'] = False
 
         response['state'] = True
 
@@ -272,7 +276,8 @@ def add_wordlist_from_official(request):
 
         to_add = UserStudyList(
             user_id=user,
-            list_name = study_list_name
+            list_name = study_list_name,
+            create_type='official'
         )
         to_add.save()
 
@@ -375,7 +380,8 @@ def add_wordlist_from_file(request):
         to_add = UserStudyList(
             user_id=user,
             list_name=study_list_name,
-            list_author=user
+            list_author=user,
+            create_type='private'
         )
         to_add.save()
 
