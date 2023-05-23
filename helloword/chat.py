@@ -121,21 +121,21 @@ def submit_video(request):
         newfile.save()
 
         filepath = 'media/' + str(newfile.file_info)
-        print(filepath)
+        # print(filepath)
 
         audio_file = open(filepath, "rb")
 
         clt = client.Client(system_prompt="You're advanced chatbot English Tutor Assistant. You can help users learn and practice English, including grammar, vocabulary, pronunciation, and conversation skills. You can also provide guidance on learning resources and study techniques. Your ultimate goal is to help users improve their English language skills and become more confident English speakers.")
 
-        print("after clt")
+        # print("after clt")
         question = clt.transcribe(audio_file)
-        print(question['text'])
+        # print(question['text'])
         messages = chat.chat(question['text'])
 
         text_respond = clt.send_message(messages)
-        print("after text_respond")
+        # print("after text_respond")
         tts.speak(text_respond)
-        print("after tts")
+        # print("after tts")
 
         
 
