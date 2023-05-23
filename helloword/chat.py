@@ -131,7 +131,7 @@ def submit_video(request):
         question = clt.transcribe(audio_file)
         print(question['text'])
         messages = chat.chat(question)
-        print(messages['content'])
+        
         text_respond = clt.send_message(messages)
         print("after text_respond")
         tts.speak(text_respond)
