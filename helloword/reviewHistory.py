@@ -30,7 +30,7 @@ def get_record_info(request):
             recd_obj = WritingHistory.objects.get(id=record_id,user_id = user_obj)
             raw = recd_obj.input
             if len(raw)>20:
-                response['content'] = recd_obj.input[:20]
+                response['content'] = raw[:20]
             else:
                 response['content'] = raw
             date = str(recd_obj.post_time)
@@ -43,7 +43,7 @@ def get_record_info(request):
             recd_obj = WordsStory.objects.get(id=record_id,user_id = user_obj)
             raw = recd_obj.story
             if len(raw) > 20:
-                response['content'] = recd_obj.input[:20]
+                response['content'] = raw[:20]
             else:
                 response['content'] = raw
             date = str(recd_obj.post_time)
@@ -57,7 +57,7 @@ def get_record_info(request):
             raw = recd_obj.cloze
             # todo 替换逻辑
             if len(raw) > 20:
-                response['content'] = recd_obj.input[:20]
+                response['content'] = raw[:20]
             else:
                 response['content'] = raw
             date = str(recd_obj.post_time)
@@ -97,19 +97,19 @@ def get_history_record_id(request):
 
         if recd_type == 0:
             # write
-            recd_obj = WritingHistory.objects.filter(user_id = user_obj,post_time__range=(start_obj,end_obj))
+            recd_obj = WritingHistory.objects.filter(user_id = user_obj,post_time__range=(start_obj,end_obj)).exclude(output__isnull=True)
             response['ids'] = list(recd_obj.values_list('id', flat=True))
             response['state'] = True
             return wrapRes(response, user_id)
         elif recd_type == 1:
             # story
-            recd_obj = WordsStory.objects.filter(user_id=user_obj, post_time__range=(start_obj, end_obj))
+            recd_obj = WordsStory.objects.filter(user_id=user_obj, post_time__range=(start_obj, end_obj)).exclude(story__isnull=True)
             response['ids'] = list(recd_obj.values_list('id', flat=True))
             response['state'] = True
             return wrapRes(response, user_id)
         elif recd_type == 2:
             # cloze
-            recd_obj = WordsCloze.objects.filter(user_id=user_obj, post_time__range=(start_obj, end_obj))
+            recd_obj = WordsCloze.objects.filter(user_id=user_obj, post_time__range=(start_obj, end_obj)).exclude(cloze__isnull=True)
             response['ids'] = list(recd_obj.values_list('id', flat=True))
             response['state'] = True
             return wrapRes(response, user_id)
