@@ -40,6 +40,7 @@ urlpatterns = [
     # media
     re_path(r'^media/user_avatar/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.MEDIA_ROOT, 'user_avatar/')}),
     re_path(r'^media/user_file/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.MEDIA_ROOT, 'user_file/')}),
+    re_path(r'^media/user_file/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.MEDIA_ROOT, 'user_voice/')}),
 
     # personalService
     path("get_wordList_smart_from_file/", personalView.get_wordList_smart_from_file),
