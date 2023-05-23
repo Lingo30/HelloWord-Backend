@@ -72,9 +72,9 @@ class Client(object):
 
 if __name__ == "__main__":
     client = Client()
-    while True:
-        message = input("You: ")
-        if message == "quit":
-            break
-        response = client.send_message(message)
-        print("Assistant: {}".format(response))
+    # while True:
+    #     message = input("You: ")
+    #     if message == "quit":
+    #         break
+    #     response = client.send_message(message)
+    #     print("Assistant: {}".format(response))
