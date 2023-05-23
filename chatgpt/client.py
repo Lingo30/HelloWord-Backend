@@ -13,7 +13,8 @@ class Client(object):
         openai.api_key = api_key
         self.model = model
         self.temperature = 0.7
-        self.max_tokens = 4096
+        self.max_out_tokens = 2048
+        self.max_in_tokens = 2048
         self.top_p = 1
         self.stream = False
         self.frequency_penalty = 0
@@ -44,20 +45,20 @@ class Client(object):
             raise TypeError("message must be a string, dict, or list of dicts")
         
         num_tokens = num_tokens_from_messages(self.messages, self.model)
-        if num_tokens > self.max_tokens:
+        if num_tokens > self.max_in_tokens:
             while len(self.messages) > 1:
                 self.messages.pop(0)
                 num_tokens = num_tokens_from_messages(self.messages, self.model)
-                if num_tokens <= self.max_tokens:
+                if num_tokens <= self.max_in_tokens:
                     break
-            if num_tokens > self.max_tokens:
-                self.messages[0]["content"] = truncate_text(self.messages[0]["content"], self.max_tokens, self.model)
+            if num_tokens > self.max_in_tokens:
+                self.messages[0]["content"] = truncate_text(self.messages[0]["content"], self.max_in_tokens, self.model)
 
         results = completion_with_backoff(
             model=self.model,
             messages=self.messages,
             temperature=self.temperature,
-            max_tokens=self.max_tokens,
+            max_tokens=self.max_out_tokens,
             top_p=self.top_p,
             frequency_penalty=self.frequency_penalty,
             presence_penalty=self.presence_penalty,
