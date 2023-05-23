@@ -80,7 +80,7 @@ def user_send(request):
 
     return JsonResponse(response)
 
-def audio_send(request):
+def submit_video(request):
     response = {}
     response['state'] = False
 
