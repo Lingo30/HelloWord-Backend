@@ -450,6 +450,24 @@ def register(request):
             response['msg'] = '用户名重复'
             return JsonResponse(response)
 
+        invite_code = data.get('invite_code')
+        if invite_code != "":
+            invite_user_find = UserInfo.objects.filter(invite_code=invite_code)
+            if invite_user_find.count()==0:
+                response['msg'] = '邀请码不存在'
+                return JsonResponse(response)
+            else:
+                invite_user_obj = invite_user_find[0]
+                invite_user_obj.has_invite=invite_user_obj.has_invite+1
+
+                if (not invite_user_obj.vip_time) or invite_user_obj.vip_time < datetime.datetime.now():
+                    invite_user_obj.vip_time = datetime.datetime.now() + datetime.timedelta(days=3)
+                else:
+                    invite_user_obj.vip_time = invite_user_obj.vip_time + datetime.timedelta(days=3)
+
+                invite_user_obj.save()
+
+
         userInfo = UserInfo(username=data.get('name'),
                             email=email_addr,
                             password_hash=data.get('password'))
