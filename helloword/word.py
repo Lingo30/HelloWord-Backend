@@ -4,10 +4,62 @@ from django.core import serializers
 import json
 import datetime
 import random
+import re
 
 from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,UserStudyWordInfo
-from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
+from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,DailyNum
 from helloword.userInfo import checkCookie, wrapRes
+
+
+def get_user_statistic(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        user_id = data.get('user_id')
+        if not checkCookie(request, response, user_id):
+            return JsonResponse(response)
+
+        user_obj = UserInfo.objects.get(id=user_id)
+        response['today_target'] = user_obj.daily_words_count
+
+        response['today_num'] = 0
+        today_study = DailyNum.objects.filter(user_id_id=user_obj,post_time=datetime.datetime.today())
+        if today_study.count()!=0:
+            response['today_num']=today_study[0].num
+
+        study_word_history = DailyNum.objects.filter(user_id_id=user_obj)
+        ret_date=[]
+        ret_num=[]
+        for i in study_word_history:
+            ret_date.append(str(i.post_time))
+            ret_num.append(i.num)
+
+        response['history_date']=ret_date
+        response['history_num']=ret_num
+
+        delta = datetime.datetime.today().weekday()
+        mon = datetime.datetime.today()-datetime.timedelta(days=delta)
+        weeknum=0
+        ret_week=[]
+        for i in range(0,7):
+            today_study = DailyNum.objects.filter(user_id_id=user_obj, post_time=mon+datetime.timedelta(days=i))
+            if today_study.count() != 0:
+                ret_week.append(today_study[0].num)
+                weeknum+=today_study[0].num
+            else:
+                ret_week.append(0)
+        response['weeknum']=weeknum
+        response['week_data']=ret_week
+
+        response['state']=True
+        return wrapRes(response, user_id)
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def get_info_by_id(word_id,response):
     try:
@@ -171,6 +223,18 @@ def group_word_learn_save(request):
         study_list = user.last_study_list
         study_list.head = new_head
         study_list.save()
+
+        study_count = UserStudyWordInfo.objects.filter(user_id_id=user,last_reviewed__gte=datetime.date.today()).count()
+        today_study = DailyNum.objects.filter(user_id_id=user, post_time=datetime.datetime.today())
+        if today_study.count() != 0:
+            today_obj = today_study[0]
+            today_obj.num = study_count
+            today_obj.save()
+            response['word_num'] = study_count
+        else:
+            today_obj = DailyNum(user_id=user,num=study_count)
+            today_obj.save()
+            response['word_num'] = study_count
 
         response['new_head'] = new_head
         response['state'] = True
