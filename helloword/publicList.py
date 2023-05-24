@@ -2,11 +2,44 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
+import re
 import datetime
-from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,PublicListCheck,UserMessage
+from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,PublicListCheck,UserMessage,Feedback
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem
 from helloword.userInfo import checkCookie, wrapRes, wrapNewRes
 
+def get_feedbacks(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        admin_id = data.get('adminId')
+
+        if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
+
+        ret = []
+        pattern = r'\..{6}'
+        for i in Feedback.objects.all():
+            cur = {
+                'userId': i.user_id.id,
+                'content': i.content,
+                'type': i.type,
+                'modules': i.modules,
+                'state': i.has_read,
+                'time': re.sub(pattern, "", str(i.post_time).replace('T', ' '))
+            }
+            ret.append(cur)
+
+        response['feedbacks'] = ret
+        response['state'] = True
+        return wrapRes(response, admin_id)
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def get_user_submit_wordlists(request):
     response = {}

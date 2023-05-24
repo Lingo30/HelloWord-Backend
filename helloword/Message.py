@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
+import re
 import datetime
 from helloword.models import Word,UserInfo,FileInfo,UserStudyWordInfo,PublicListCheck
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,UserMessage,BroadcastMessage
@@ -25,6 +26,7 @@ def get_messages(request):
         user_obj = UserInfo.objects.get(id=user_id)
 
         ret = []
+        pattern = r'\..{6}'
         for i in UserMessage.objects.filter(user_id_id=user_obj).order_by('-post_time'):
             type = '词单审核通知'
             if i.message.find('【公告】')!=-1:
@@ -40,7 +42,8 @@ def get_messages(request):
                 'id': i.id,
                 'title': type,
                 'content': i.message,
-                'state':i.has_read
+                'state':i.has_read,
+                'time':re.sub(pattern,"",str(i.post_time).replace('T', ' ')),
             }
             ret.append(cur)
 
