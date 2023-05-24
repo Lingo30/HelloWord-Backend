@@ -55,6 +55,8 @@ urlpatterns = [
     # message
     path("send_to_all/",messageView.send_to_all),
     path("send_message_to_user/",messageView.send_message_to_user),
+    path("get_messages/",messageView.get_messages),
+    path("set_message_state/",messageView.set_message_state),
 
     # reviewHistory
     path("get_record_info/",reviewHistoryView.get_record_info),
