@@ -199,4 +199,8 @@ class DailyNum(models.Model):
     post_time = models.DateField(auto_now_add=True)
     num = models.IntegerField(default=0)
 
-
+class AudioHistory(models.Model):
+    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    audio = models.FileField(null=True,upload_to="user_voice/")
+    type = models.BooleanField(null=True)
+    post_time = models.DateTimeField(auto_now=True)

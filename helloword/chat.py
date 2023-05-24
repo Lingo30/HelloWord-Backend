@@ -2,12 +2,15 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 import json
-from helloword.models import ChatHistory,FileInfo
+from helloword.models import ChatHistory,FileInfo,AudioHistory
 from helloword.models import UserInfo
 from chatgpt import client
 from chatgpt.tools import chat
 import datetime
 import re
+
+with open('env.json') as env:
+    ENV = json.load(env)
 
 from helloword.userInfo import checkCookie, wrapRes
 from helloword.preload import tts
@@ -84,83 +87,60 @@ def submit_video(request):
     response = {}
     response['state'] = False
 
-    # data = json.loads(request.body.decode())
-
-    # user_id = data.get('user_id')
-    # question = data.get('question')
-    user_id = 0 # for testing
     try:
+        user_id = int(str(request.FILES.get('user_id').read())[2:-1])
         file = request.FILES.get('video')
-        # if not checkCookie(request,response,user_id):
-        #     return JsonResponse(response)
-        # user_obj = UserInfo.objects.get(id=user_id)
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+        user_obj = UserInfo.objects.get(id=user_id)
 
-        #if user_obj.gpt_lock and user_obj.gpt_lock != "":
-        #    response['msg'] = '小助手正在为您服务，请等待结果返回~'
-        #    return JsonResponse(response)
-        #user_obj.gpt_lock = 'sentence'
-        #user_obj.save()
+        if user_obj.gpt_lock and user_obj.gpt_lock != "":
+            response['msg'] = '小助手正在为您服务，请等待结果返回~'
+            return JsonResponse(response)
+        user_obj.gpt_lock = 'audio'
+        user_obj.save()
 
-        # user_chat = ChatHistory(user_id=user_obj, message=question, type=True)
+        user_chat = AudioHistory(user_id=user_obj, audio=file, type=True)
 
-        #times_left = dailly_times - ChatHistory.objects.filter(user_id_id=user_obj,
-        #                                                       type=True,
-        #                                                      post_time__gte=datetime.date.today()).count()
-        #if times_left == 0:
-        #    response['last_times'] = 0
-        #    response['msg'] = '今天的对话次数已经用完啦！明天再来吧'
-        #    user_obj.gpt_lock = ""
-        #    user_obj.save()
-        #    return JsonResponse(response)
+        times_left = dailly_times - AudioHistory.objects.filter(user_id_id=user_obj,type=True,post_time__gte=datetime.date.today()).count()
+        if times_left == 0:
+            response['last_times'] = 0
+            response['msg'] = '今天的语音对话次数已经用完啦！明天再来吧'
+            user_obj.gpt_lock = ""
+            user_obj.save()
+            return JsonResponse(response)
 
+        user_chat.save()
 
-        # user_chat.save()
+        gpt_chat = AudioHistory(user_id=user_obj, audio=file,type=False)
+        gpt_chat.save()
 
-
-        newfile = FileInfo(file_info=file)
-        newfile.save()
-
-        filepath = 'media/' + str(newfile.file_info)
-        # print(filepath)
-
-        audio_file = open(filepath, "rb")
+        user_filepath = 'media/' + str(user_chat.audio)
+        gpt_filepath = str(gpt_chat.audio)
+        audio_file = open(user_filepath, "rb")
 
         clt = client.Client(system_prompt="You're advanced chatbot English Tutor Assistant. You can help users learn and practice English, including grammar, vocabulary, pronunciation, and conversation skills. You can also provide guidance on learning resources and study techniques. Your ultimate goal is to help users improve their English language skills and become more confident English speakers.")
-
-        # print("after clt")
         question = clt.transcribe(audio_file)
-        # print(question['text'])
         messages = chat.chat(question['text'])
-
         text_respond = clt.send_message(messages)
-        # print("after text_respond")
-        tts.speak(text_respond)
-        # print("after tts")
+        tts.speak(text_respond,gpt_filepath)
 
-        
-
-        # gpt_chat = ChatHistory(user_id=user_obj, message=gpt_respond, type=False)
-        # gpt_chat.save()
-
-        #times_left -= 1
-        #response['msg'] = '今日剩余次数：' + str(times_left)
-        #response['last_times'] = times_left
+        times_left -= 1
+        response['msg'] = '今日剩余次数：' + str(times_left)
+        response['last_times'] = times_left
 
 
-        # response['receive_time'] = user_chat.post_time
-        #response['receive_time'] = None
-        response['post_message'] = 'https://sayhelloword.com/dev-api/static/user_voice/output.wav'
-        # response['post_time'] = gpt_chat.post_time
-        #response['post_time'] = None
+        response['receive_time'] = user_chat.post_time
+        #response['post_message'] = 'https://sayhelloword.com/dev-api/static/user_voice/output.wav'
+        response['post_message']='https://' + str(ENV['HOST']) +  str(ENV['API'])  +'/static/' + str(gpt_chat.audio)
+        response['post_time'] = gpt_chat.post_time
 
         response['state'] = True
-        #user_obj.gpt_lock = ""
-        #user_obj.save()
-
+        user_obj.gpt_lock = ""
+        user_obj.save()
 
     except Exception as e:
         response['msg'] = str(e)
-
 
     return JsonResponse(response)
 
