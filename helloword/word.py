@@ -34,7 +34,7 @@ def get_user_statistic(request):
         ret_num=[]
         for i in study_word_history:
             time = i.post_time.timetuple()
-            rm0time = str(time.tm_year) + "-" + str(time.tm_mon) + "-" + str(time.tm_md)
+            rm0time = str(time.tm_year) + "-" + str(time.tm_mon) + "-" + str(time.tm_mday)
             ret_date.append(rm0time)
             ret_num.append(i.num)
 
