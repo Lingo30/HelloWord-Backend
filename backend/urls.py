@@ -52,6 +52,7 @@ urlpatterns = [
     path("reject_submit_wordlist/",publicListView.reject_submit_wordlist),
     path("accept_submit_wordlist/",publicListView.accept_submit_wordlist),
     path("get_user_submit_wordlists/",publicListView.get_user_submit_wordlists),
+    path("get_feedbacks/",publicListView.get_feedbacks),
 
     # message
     path("send_to_all/",messageView.send_to_all),
