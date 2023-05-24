@@ -33,7 +33,9 @@ def get_user_statistic(request):
         ret_date=[]
         ret_num=[]
         for i in study_word_history:
-            ret_date.append(str(i.post_time))
+            time = i.post_time.timetuple()
+            rm0time = str(time.tm_year) + "-" + str(time.tm_mon) + "-" + str(time.tm_md)
+            ret_date.append(rm0time)
             ret_num.append(i.num)
 
         response['history_date']=ret_date
@@ -50,7 +52,7 @@ def get_user_statistic(request):
                 weeknum+=today_study[0].num
             else:
                 ret_week.append(0)
-        response['weeknum']=weeknum
+        response['week_num']=weeknum
         response['week_data']=ret_week
 
         response['state']=True
