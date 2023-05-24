@@ -21,6 +21,8 @@ class UserInfo(models.Model):
     gpt_lock=models.CharField(max_length=128,null=True,default="")
     user_type = models.CharField(max_length=128, null=True, default="")
 
+    invite_code = models.CharField(max_length=64, null=True)
+
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)
     token = models.CharField(max_length=32)
@@ -157,7 +159,9 @@ class Feedback(models.Model):
     type = models.CharField(max_length=64,default="")
     modules = models.CharField(max_length=512,default="")
     content = models.CharField(max_length=1024)
-    post_time = models.DateTimeField(auto_now=True, null=True)
+    post_time = models.DateTimeField(auto_now_add=True, null=True)
+    has_read = models.BooleanField(default=False)
+
 
 class BroadcastMessage(models.Model):
     message = models.CharField(max_length=1024)
