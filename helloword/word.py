@@ -236,6 +236,12 @@ def group_word_learn_save(request):
             today_obj.save()
             response['word_num'] = study_count
 
+        user_obj = user
+        if study_count == 100:
+            if (not user_obj.vip_time) or user_obj.vip_time < (datetime.datetime.today()+datetime.timedelta(days=1)):
+                user_obj.vip_time = datetime.datetime.today()+datetime.timedelta(days=1)
+                user_obj.save()
+
         response['new_head'] = new_head
         response['state'] = True
         return wrapRes(response, user_id)
