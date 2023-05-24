@@ -22,6 +22,10 @@ class UserInfo(models.Model):
     user_type = models.CharField(max_length=128, null=True, default="")
 
     invite_code = models.CharField(max_length=64, null=True)
+    has_invite = models.IntegerField(default=0)
+    vip_time = models.DateTimeField(null=True)
+    last_login_date = models.DateField(null=True,auto_now=True)
+    month_login = models.IntegerField(default=0)
 
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)
@@ -189,4 +193,10 @@ class PublicListCheck(models.Model):
     # 审核accept后，拉取的官方词单的id；默认官方词单不会被删除
     send_message = models.ForeignKey("UserMessage", null=True, on_delete=models.SET_NULL)
     # 审核意见
+
+class DailyNum(models.Model):
+    user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE)
+    post_time = models.DateField(auto_now_add=True)
+    num = models.IntegerField(default=0)
+
 

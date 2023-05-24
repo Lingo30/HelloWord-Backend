@@ -73,6 +73,7 @@ urlpatterns = [
     path("cookie_login/", userview.cookie_login),
     path("get_verify_img/", userview.get_verify_img),
     path("adminLogin/", userview.adminLogin),
+    path("get_vip_info/",userview.get_vip_info),
 
 
     path("submit_image/",userview.submit_image),
