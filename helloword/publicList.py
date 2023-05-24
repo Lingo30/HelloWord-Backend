@@ -8,6 +8,43 @@ from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListIt
 from helloword.userInfo import checkCookie, wrapRes, wrapNewRes
 
 
+def get_user_submit_wordlists(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        admin_id = data.get('adminId')
+
+        if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
+
+        ret = []
+        for i in PublicListCheck.objects.exclude(user_study_list_id__isnull=True):
+            handleState = 0
+            if i.check_status=='accept':
+                handleState = 1
+            elif i.check_status=='reject':
+                handleState = 2
+            cur = {
+                'listId': i.user_study_list_id.id,
+                'listName': i.user_study_list_id.list_name,
+                'userId': i.user_id.id,
+                'handleState': handleState,
+                'handleMessage': i.send_message.message if i.send_message else ""
+            }
+            ret.append(cur)
+
+        response['messages'] = ret
+
+        response['state'] = True
+        return wrapRes(response, admin_id)
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
 def accept_submit_wordlist(request):
     response = {}
     response['state'] = False
@@ -16,6 +53,9 @@ def accept_submit_wordlist(request):
         data = json.loads(request.body.decode())
         admin_id = data.get('adminId')
         list_id = data.get('listId')
+
+        if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
 
         list_obj = UserStudyList.objects.get(id=list_id)
         check_find = PublicListCheck.objects.filter(list_id=list_obj, check_status='user_submit')
@@ -72,6 +112,9 @@ def reject_submit_wordlist(request):
         admin_id = data.get('adminId')
         list_id = data.get('listId')
         message = data.get('message')
+
+        if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
 
         list_obj = UserStudyList.objects.get(id=list_id)
         check_find = PublicListCheck.objects.filter(list_id=list_obj,check_status='user_submit')
