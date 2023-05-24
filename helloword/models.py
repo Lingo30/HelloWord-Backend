@@ -24,6 +24,8 @@ class UserInfo(models.Model):
     invite_code = models.CharField(max_length=64, null=True)
     has_invite = models.IntegerField(default=0)
     vip_time = models.DateTimeField(null=True)
+    last_login_date = models.DateField(null=True,auto_now=True)
+    month_login = models.IntegerField(default=0)
 
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)

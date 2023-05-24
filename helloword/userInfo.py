@@ -272,6 +272,17 @@ def login(request):
                     'selectWordlist': userInfo[0].last_study_list.id
                 }
 
+                user_obj = userInfo[0]
+                if not user_obj.last_login_date:
+                    user_obj.month_login = 1
+                    user_obj.save()
+                elif user_obj.last_login_date!=datetime.date.today():
+                    if datetime.datetime.today().month!=user_obj.last_login_date.month:
+                        user_obj.month_login=1
+                    else:
+                        user_obj.month_login = user_obj.month_login + 1
+                    user_obj.save()
+
                 return wrapNewRes(response, userInfo[0].id)
 
             else:
@@ -313,6 +324,17 @@ def adminLogin(request):
                         'wordNum': userInfo[0].daily_words_count,
                         'selectWordlist': userInfo[0].last_study_list.id
                     }
+
+                    user_obj = userInfo[0]
+                    if not user_obj.last_login_date:
+                        user_obj.month_login = 1
+                        user_obj.save()
+                    elif user_obj.last_login_date != datetime.date.today():
+                        if datetime.datetime.today().month != user_obj.last_login_date.month:
+                            user_obj.month_login = 1
+                        else:
+                            user_obj.month_login = user_obj.month_login + 1
+                        user_obj.save()
 
                     return wrapNewRes(response, userInfo[0].id)
                 else:
@@ -403,6 +425,9 @@ def register(request):
         email_token.has_register = True
         email_token.save()
 
+        userInfo.month_login = 1
+        userInfo.save()
+
         response['state'] = True
 
         return wrapNewRes(response,userInfo.id)
@@ -482,6 +507,17 @@ def cookie_login(request):
             }
 
             print("user_id: "+str(userInfo.id)+" username: "+str(userInfo.username))
+
+            user_obj = userInfo
+            if not user_obj.last_login_date:
+                user_obj.month_login = 1
+                user_obj.save()
+            elif user_obj.last_login_date != datetime.date.today():
+                if datetime.datetime.today().month != user_obj.last_login_date.month:
+                    user_obj.month_login = 1
+                else:
+                    user_obj.month_login = user_obj.month_login + 1
+                user_obj.save()
 
             return wrapNewRes(response,user_id)
 
