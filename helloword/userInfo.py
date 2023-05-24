@@ -4,7 +4,7 @@ from django.core import serializers
 import json
 import datetime
 from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,FileInfo,EmailToken,EmailResetToken
-from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,UserStudyWordInfo
+from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,UserStudyWordInfo,DailyNum
 from pathlib import Path
 import sys
 import os
@@ -225,6 +225,10 @@ def gen_token():
     # 返回一个随机字符串，生成4位验证码
     return ''.join(random.choices('0123456789abcdefghigklmnopqrstuvwxyz', k=24))
 
+def gen_num_token():
+    # 返回一个随机字符串，生成4位验证码
+    return ''.join(random.choices('0123456789abcdefghigklmnopqrstuvwxyz', k=6))
+
 dataKV=[]
 codeMap = {}
 with open('../outputKV.json') as jsonKV:
@@ -241,6 +245,49 @@ def get_verify_img(request):
         response['img'] = img_url
         response['imgCode'] = codekey
         response['state'] = True
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
+def get_vip_info(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        user_id = data.get('user_id')
+        if not checkCookie(request, response, user_id):
+            return JsonResponse(response)
+
+        user_obj = UserInfo.objects.get(id=user_id)
+        response['day_num']=user_obj.month_login
+
+        response['word_num'] = 0
+        today_study = DailyNum.objects.filter(user_id_id=user_obj,post_time=datetime.datetime.today())
+        if today_study.count()!=0:
+            response['word_num']=today_study[0].num
+
+        response['friend_num']=user_obj.has_invite
+
+        if not user_obj.invite_code:
+            code = gen_num_token()
+            barrier = 0
+            while UserInfo.objects.filter(invite_code=code).count()!=0:
+                barrier+=1
+                code = gen_num_token()
+                if barrier>10:
+                    response['msg'] = '邀请码生成错误，请重试'
+                    return JsonResponse(response)
+            user_obj.invite_code = code
+            user_obj.save()
+
+        response['invite_code']=user_obj.invite_code
+        response['state']=True
+
+        return wrapRes(response, user_id)
+
     except Exception as e:
         response['msg'] = str(e)
 
@@ -276,11 +323,16 @@ def login(request):
                 if not user_obj.last_login_date:
                     user_obj.month_login = 1
                     user_obj.save()
-                elif user_obj.last_login_date!=datetime.date.today():
-                    if datetime.datetime.today().month!=user_obj.last_login_date.month:
-                        user_obj.month_login=1
+                elif user_obj.last_login_date != datetime.date.today():
+                    if datetime.datetime.today().month != user_obj.last_login_date.month:
+                        user_obj.month_login = 1
                     else:
                         user_obj.month_login = user_obj.month_login + 1
+                        if user_obj.month_login == 10:
+                            if (not user_obj.vip_time) or user_obj.vip_time < datetime.datetime.now():
+                                user_obj.vip_time = datetime.datetime.now() + datetime.timedelta(days=7)
+                            else:
+                                user_obj.vip_time = user_obj.vip_time + datetime.timedelta(days=7)
                     user_obj.save()
 
                 return wrapNewRes(response, userInfo[0].id)
@@ -334,6 +386,11 @@ def adminLogin(request):
                             user_obj.month_login = 1
                         else:
                             user_obj.month_login = user_obj.month_login + 1
+                            if user_obj.month_login == 10:
+                                if (not user_obj.vip_time) or user_obj.vip_time < datetime.datetime.now():
+                                    user_obj.vip_time = datetime.datetime.now() + datetime.timedelta(days=7)
+                                else:
+                                    user_obj.vip_time = user_obj.vip_time + datetime.timedelta(days=7)
                         user_obj.save()
 
                     return wrapNewRes(response, userInfo[0].id)
@@ -517,6 +574,11 @@ def cookie_login(request):
                     user_obj.month_login = 1
                 else:
                     user_obj.month_login = user_obj.month_login + 1
+                    if user_obj.month_login==10:
+                        if (not user_obj.vip_time) or user_obj.vip_time<datetime.datetime.now():
+                            user_obj.vip_time=datetime.datetime.now()+datetime.timedelta(days=7)
+                        else:
+                            user_obj.vip_time=user_obj.vip_time+datetime.timedelta(days=7)
                 user_obj.save()
 
             return wrapNewRes(response,user_id)
@@ -576,6 +638,27 @@ def get_user_info(request):
     try:
         if not checkCookie(request,response,user_id):
             return JsonResponse(response)
+
+        user_obj = user
+        if not user_obj.last_login_date:
+            user_obj.month_login = 1
+            user_obj.save()
+        elif user_obj.last_login_date != datetime.date.today():
+            if datetime.datetime.today().month != user_obj.last_login_date.month:
+                user_obj.month_login = 1
+            else:
+                user_obj.month_login = user_obj.month_login + 1
+                if user_obj.month_login == 10:
+                    if (not user_obj.vip_time) or user_obj.vip_time < datetime.datetime.now():
+                        user_obj.vip_time = datetime.datetime.now() + datetime.timedelta(days=7)
+                    else:
+                        user_obj.vip_time = user_obj.vip_time + datetime.timedelta(days=7)
+            user_obj.save()
+
+        cal_vip_second = 0
+        if user.vip_time>datetime.datetime.now():
+            cal_vip_second = (user.vip_time-datetime.datetime.now()).total_seconds()
+
         response['info'] = {
             'avatar_path': 'http://' + str(ENV['HOST']) + str(ENV['API']) +'/static/' + str(user.user_avatar),
             'email': user.email if user.email else '',
@@ -583,7 +666,8 @@ def get_user_info(request):
             'name': user.not_unique_name if user.not_unique_name else '',
             'days': user.study_days_count if user.study_days_count else 0,
             'lists': UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
-            'tags': user.tags.split(" ")
+            'tags': user.tags.split(" "),
+            'last_time': cal_vip_second
         }
         response['state'] = True
         return wrapRes(response, user_id)
