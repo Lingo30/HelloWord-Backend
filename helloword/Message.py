@@ -28,15 +28,10 @@ def get_messages(request):
         ret = []
         pattern = r'\..{6}'
         for i in UserMessage.objects.filter(user_id_id=user_obj).order_by('-post_time'):
-            type = '词单审核通知'
-            if i.message.find('【公告】')!=-1:
-                type='公告'
-            elif i.message.find('【Re: Bug反馈】')!=-1:
-                type='Re: Bug反馈'
-            elif i.message.find('【词单审核通知】')!=-1:
-                type='词单审核通知'
-            else:
-                type='其他'
+            type='其他'
+            find_type = re.findall(r"[【].*?[】]", i.message)
+            if len(find_type)>0:
+                type=find_type[0]
 
             cur = {
                 'id': i.id,
@@ -101,6 +96,9 @@ def send_message_to_user(request):
         user_id = data.get('userId')
         admin_id = data.get('adminId')
         message = data.get('message')
+        title = data.get('title')
+        if title=="":
+            title='Re: Bug反馈'
 
         if not checkCookie(request,response,admin_id):
             return JsonResponse(response)
@@ -111,7 +109,7 @@ def send_message_to_user(request):
             return JsonResponse(response)
         user_obj = UserInfo.objects.get(id=user_id)
 
-        message_obj = UserMessage(user_id=user_obj,message='【Re: Bug反馈】'+message)
+        message_obj = UserMessage(user_id=user_obj,message='【'+title+'】'+message)
         message_obj.save()
         response['state'] = True
         return wrapRes(response, admin_id)
