@@ -656,7 +656,7 @@ def get_user_info(request):
             user_obj.save()
 
         cal_vip_second = 0
-        if user.vip_time>datetime.datetime.now():
+        if user.vip_time and user.vip_time > datetime.datetime.now():
             cal_vip_second = (user.vip_time-datetime.datetime.now()).total_seconds()
 
         response['info'] = {
