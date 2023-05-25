@@ -293,6 +293,26 @@ def get_vip_info(request):
 
     return JsonResponse(response)
 
+def change_custom(request):
+    response = {}
+    response['state'] = False
+    data = json.loads(request.body.decode('utf-8'))
+    user_id = data.get('user_id')
+    user_custom = data.get('user_custom')
+
+    try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.custom = user_custom
+        user_obj.save()
+        response['state'] = True
+        return wrapRes(response, user_id)
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
 def login(request):
     response = {}
     response['state'] = False
@@ -316,7 +336,8 @@ def login(request):
                 response['data'] = {
                     'uid': userInfo[0].id,
                     'wordNum': userInfo[0].daily_words_count,
-                    'selectWordlist': userInfo[0].last_study_list.id
+                    'selectWordlist': userInfo[0].last_study_list.id,
+                    'custom': userInfo[0].custom
                 }
 
                 user_obj = userInfo[0]
@@ -374,7 +395,8 @@ def adminLogin(request):
                     response['data'] = {
                         'uid': userInfo[0].id,
                         'wordNum': userInfo[0].daily_words_count,
-                        'selectWordlist': userInfo[0].last_study_list.id
+                        'selectWordlist': userInfo[0].last_study_list.id,
+                        'custom': userInfo[0].custom
                     }
 
                     user_obj = userInfo[0]
@@ -494,7 +516,8 @@ def register(request):
         response['data'] = {
             'uid': userInfo.id,
             'wordNum': userInfo.daily_words_count,
-            'selectWordlist': userInfo.last_study_list.id
+            'selectWordlist': userInfo.last_study_list.id,
+            'custom': userInfo.custom
         }
 
         email_token.has_register = True
@@ -578,7 +601,8 @@ def cookie_login(request):
             response['data'] = {
                 'uid': userInfo.id,
                 'wordNum': userInfo.daily_words_count,
-                'selectWordlist': userInfo.last_study_list.id
+                'selectWordlist': userInfo.last_study_list.id,
+                'custom': userInfo.custom
             }
 
             print("user_id: "+str(userInfo.id)+" username: "+str(userInfo.username))
