@@ -27,6 +27,8 @@ class UserInfo(models.Model):
     last_login_date = models.DateField(null=True,auto_now=True)
     month_login = models.IntegerField(default=0)
 
+    custom = models.IntegerField(default=0)
+
 class EmailToken(models.Model):
     email_addr = models.CharField(max_length=64, unique=True)
     token = models.CharField(max_length=32)
