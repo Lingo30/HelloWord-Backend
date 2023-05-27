@@ -142,6 +142,14 @@ def submit_video(request):
     except Exception as e:
         response['msg'] = str(e)
 
+    try:
+        user_id = int(str(request.FILES.get('user_id').read())[2:-1])
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.gpt_lock = ""
+        user_obj.save()
+    except Exception as e:
+        response['msg'] = str(e)
+
     return JsonResponse(response)
 
 def get_log_history(request):
