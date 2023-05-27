@@ -29,10 +29,7 @@ def get_record_info(request):
             # write
             recd_obj = WritingHistory.objects.get(id=record_id,user_id = user_obj)
             raw = recd_obj.input
-            if len(raw)>20:
-                response['content'] = raw[:20]
-            else:
-                response['content'] = raw
+            response['content'] = raw
             date = str(recd_obj.post_time)
             response['date'] = {'month': Mon[int(date[5:7]) - 1], 'day': date[8:10]}
 
@@ -42,10 +39,7 @@ def get_record_info(request):
             # story
             recd_obj = WordsStory.objects.get(id=record_id,user_id = user_obj)
             raw = recd_obj.story
-            if len(raw) > 20:
-                response['content'] = raw[:20]
-            else:
-                response['content'] = raw
+            response['content'] = raw
             date = str(recd_obj.post_time)
             response['date'] = {'month': Mon[int(date[5:7]) - 1], 'day': date[8:10]}
 
@@ -56,10 +50,7 @@ def get_record_info(request):
             recd_obj = WordsCloze.objects.get(id=record_id,user_id = user_obj)
             raw = recd_obj.cloze
             # todo 替换逻辑
-            if len(raw) > 20:
-                response['content'] = raw[:20]
-            else:
-                response['content'] = raw
+            response['content'] = raw
             date = str(recd_obj.post_time)
             response['date'] = {'month': Mon[int(date[5:7]) - 1], 'day': date[8:10]}
 
