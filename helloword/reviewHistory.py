@@ -185,7 +185,7 @@ def get_writing_record(request):
             return JsonResponse(response)
 
         recd_obj = WritingHistory.objects.get(id=record_id, user_id=user_id)
-        response['article'] = json.loads(recd_obj.input)
+        response['article'] = recd_obj.input
         response['comment'] = json.loads(recd_obj.output)
         response['state'] = True
         return wrapRes(response, user_id)
