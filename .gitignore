@@ -5,6 +5,7 @@ env.json
 outputKV.json
 uwsgi.log
 uwsgi.pid
+test.py
 /backend/__pycache__
 /helloword/__pycache__
 /helloword/migrations/__pycache__
