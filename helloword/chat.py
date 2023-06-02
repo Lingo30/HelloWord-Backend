@@ -88,7 +88,7 @@ def submit_video(request):
     response['state'] = False
 
     try:
-        str_tmp = str(request.FILES.get('user_id').read())[2:-1]
+        str_tmp = str(request.FILES.get('user_id').read())[2:-1].replace("\"","")
         print(str_tmp)
         user_id = int(str_tmp)
         file = request.FILES.get('video')
