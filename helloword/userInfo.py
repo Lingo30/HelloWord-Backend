@@ -356,7 +356,7 @@ def login(request):
         value = data.get('verify')
         key = data.get('imgCode')
 
-        if codeMap.get(key,'') != value:
+        if codeMap.get(key,'').lower() != str(value).lower():
             response['msg'] = '验证码错误'
             return JsonResponse(response)
 
@@ -413,7 +413,7 @@ def adminLogin(request):
         value = data.get('verify')
         key = data.get('imgCode')
 
-        if codeMap.get(key,'') != value:
+        if codeMap.get(key,'').lower() != str(value).lower():
             response['msg'] = '验证码错误'
             return JsonResponse(response)
 
