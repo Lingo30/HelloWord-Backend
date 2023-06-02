@@ -91,7 +91,7 @@ def accept_submit_wordlist(request):
             return JsonResponse(response)
 
         list_obj = UserStudyList.objects.get(id=list_id)
-        check_find = PublicListCheck.objects.filter(list_id=list_obj, check_status='user_submit')
+        check_find = PublicListCheck.objects.filter(user_study_list_id_id=list_obj, check_status='user_submit')
         if check_find.count() == 0:
             response['msg'] = '未上传该词单'
             return JsonResponse(response)
@@ -150,7 +150,7 @@ def reject_submit_wordlist(request):
             return JsonResponse(response)
 
         list_obj = UserStudyList.objects.get(id=list_id)
-        check_find = PublicListCheck.objects.filter(list_id=list_obj,check_status='user_submit')
+        check_find = PublicListCheck.objects.filter(user_study_list_id_id=list_obj,check_status='user_submit')
         if check_find.count() == 0:
             response['msg'] = '未上传该词单'
             return JsonResponse(response)
@@ -226,11 +226,11 @@ def submit_official_wordlist(request):
 
         user_obj = UserInfo.objects.get(id=user_id)
         list_obj = UserStudyList.objects.get(id=list_id)
-        if PublicListCheck.objects.filter(user_id=user_obj,list_id=list_obj).exclude(check_status='reject').count() == 0:
+        if PublicListCheck.objects.filter(user_id=user_obj,user_study_list_id_id=list_obj).exclude(check_status='reject').count() == 0:
             if list_obj.list_author.id != user_id:
                 response['msg'] = '词单与作者不匹配'
                 return JsonResponse(response)
-            new_submit = PublicListCheck(user_id=user_obj,list_id=list_obj)
+            new_submit = PublicListCheck(user_id=user_obj,user_study_list_id=list_obj)
             new_submit.save()
 
             response['state'] = True
