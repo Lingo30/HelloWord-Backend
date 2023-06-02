@@ -10,6 +10,10 @@ import sys
 import os
 import struct
 import random
+import json
+from captcha.image import ImageCaptcha
+import random
+import string
 
 with open('env.json') as env:
     ENV = json.load(env)
@@ -235,6 +239,36 @@ with open('../outputKV.json') as jsonKV:
     dataKV = json.load(jsonKV)
     for i in dataKV:
         codeMap[i['key']]=i['value']
+
+
+def modify_KVcode(key):
+    #print(dataKV)
+    #key = 'TNEK'
+    new = ''.join(random.choices('ABDEFGHJKLMNPQRSTUVWXYZ23456789', k=4))
+    num = 0
+    for i in dataKV:
+        if i['key'] == key:
+            print(i)
+            num = int(i['id']) - 1
+            i['value'] = new
+            break
+
+    codeMap[key] = new
+    characters = string.digits + string.ascii_uppercase
+    width, height, n_len, n_class = 160, 50, 4, len(characters)
+    generator = ImageCaptcha(width=width, height=height)
+    img = generator.generate_image(new)
+
+    #file_name = './test1/' + str(num).zfill(5) + '_' + key + '.jpg'
+    file_name = './checkcode/' + str(num).zfill(5) + '_' + key + '.jpg'
+    img.save(file_name)
+    #print(dataKV)
+    for i in dataKV:
+        if i['key'] == key:
+            print(i)
+    with open("../outputKV.json", "w") as json_file:
+        json.dump(dataKV, json_file, ensure_ascii=False, indent=4)
+
 def get_verify_img(request):
     response = {}
     response['state'] = False
@@ -355,7 +389,7 @@ def login(request):
                             else:
                                 user_obj.vip_time = user_obj.vip_time + datetime.timedelta(days=7)
                     user_obj.save()
-
+                modify_KVcode(key)
                 return wrapNewRes(response, userInfo[0].id)
 
             else:
@@ -527,6 +561,7 @@ def register(request):
         userInfo.save()
 
         response['state'] = True
+        modify_KVcode(key)
 
         return wrapNewRes(response,userInfo.id)
 
