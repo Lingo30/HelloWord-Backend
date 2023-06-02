@@ -12,7 +12,7 @@ import re
 with open('env.json') as env:
     ENV = json.load(env)
 
-from helloword.userInfo import checkCookie, wrapRes
+from helloword.userInfo import checkCookie, wrapRes, copy
 from helloword.preload import tts
 dailly_times = 7
 def user_send(request):
@@ -112,7 +112,18 @@ def submit_video(request):
 
         user_chat.save()
 
-        gpt_chat = AudioHistory(user_id=user_obj, audio=file,type=False)
+        src = 'media/' + str(user_chat.audio)
+        dst = '../backend_static/' + str(user_chat.audio)
+        if copy(src, dst):
+            print("复制音频成功!")
+        else:
+            print("复制音频失败!")
+            user_chat.delete()
+            response['msg'] = "音频上传失败!"
+            return JsonResponse(response)
+
+
+        gpt_chat = AudioHistory(user_id=user_obj, audio=file)
         gpt_chat.save()
 
         user_filepath = 'media/' + str(user_chat.audio)
@@ -138,6 +149,9 @@ def submit_video(request):
         response['state'] = True
         user_obj.gpt_lock = ""
         user_obj.save()
+        gpt_chat.type=False
+        gpt_chat.save()
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
@@ -171,6 +185,35 @@ def get_log_history(request):
                 'type' : item.type,
                 'time' : re.sub(pattern,"",str(item.post_time).replace('T', ' ')),
                 'content' : item.message
+            }
+            history.append(cur)
+        response['history'] = history
+        response['state'] = True
+        return wrapRes(response, user_id)
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+def get_video_history(request):
+    response = {}
+    response['state'] = False
+
+    data = json.loads(request.body.decode())
+
+    user_id = data.get('user_id')
+    try:
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+        user_obj=UserInfo.objects.get(id=user_id)
+        log_history = AudioHistory.objects.filter(user_id_id=user_obj).filter(type__isnull=False)
+        history = []
+        pattern = r'\..{6}'
+        for item in log_history:
+            cur = {
+                'type' : item.type,
+                'time' : re.sub(pattern,"",str(item.post_time).replace('T', ' ')),
+                'content' : 'https://' + str(ENV['HOST']) +  str(ENV['API'])  +'/static/' + str(item.audio)
             }
             history.append(cur)
         response['history'] = history

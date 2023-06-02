@@ -126,6 +126,7 @@ urlpatterns = [
     path("user_send/", chatview.user_send),
     path("submit_video/", chatview.submit_video),
     path("get_log_history/", chatview.get_log_history),
+    path("get_video_history/",chatview.get_video_history),
 
     # review
     # blank text
