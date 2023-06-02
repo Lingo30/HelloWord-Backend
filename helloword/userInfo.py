@@ -260,7 +260,7 @@ def modify_KVcode(key):
     img = generator.generate_image(new)
 
     #file_name = './test1/' + str(num).zfill(5) + '_' + key + '.jpg'
-    file_name = './checkcode/' + str(num).zfill(5) + '_' + key + '.jpg'
+    file_name = '../backend_static/checkcode/' + str(num).zfill(5) + '_' + key + '.jpg'
     img.save(file_name)
     #print(dataKV)
     for i in dataKV:
