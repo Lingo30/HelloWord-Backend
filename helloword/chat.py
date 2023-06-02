@@ -88,7 +88,9 @@ def submit_video(request):
     response['state'] = False
 
     try:
-        user_id = int(str(request.FILES.get('user_id').read())[2:-1])
+        str_tmp = str(request.FILES.get('user_id').read())[2:-1]
+        print(str_tmp)
+        user_id = int(str_tmp)
         file = request.FILES.get('video')
         if not checkCookie(request,response,user_id):
             return JsonResponse(response)
