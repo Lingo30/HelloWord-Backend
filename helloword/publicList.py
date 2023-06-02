@@ -28,7 +28,8 @@ def get_feedbacks(request):
                 'type': i.type,
                 'modules': i.modules,
                 'state': i.has_read,
-                'time': re.sub(pattern, "", str(i.post_time).replace('T', ' '))
+                'time': re.sub(pattern, "", str(i.post_time).replace('T', ' ')),
+                'messageId': i.id
             }
             ret.append(cur)
 
@@ -41,6 +42,29 @@ def get_feedbacks(request):
 
     return JsonResponse(response)
 
+def set_read_message(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        admin_id = data.get('adminId')
+        messageId = data.get('messageId')
+
+        if not checkCookie(request, response, admin_id):
+            return JsonResponse(response)
+
+        msg = Feedback.objects.get(id=messageId)
+        msg.has_read=True
+        msg.save()
+
+        response['state'] = True
+        return wrapRes(response, admin_id)
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 def get_user_submit_wordlists(request):
     response = {}
     response['state'] = False
@@ -229,6 +253,14 @@ def submit_official_wordlist(request):
         if PublicListCheck.objects.filter(user_id=user_obj,user_study_list_id_id=list_obj).exclude(check_status='reject').count() == 0:
             if list_obj.list_author.id != user_id:
                 response['msg'] = '词单与作者不匹配'
+                return JsonResponse(response)
+            test_official = True
+            if list_obj.create_type and list_obj.create_type == 'private':
+                test_official = False
+            elif list_obj.list_author:
+                test_official = False
+            if test_official == True:
+                response['msg'] = '官方词单不能上传哦~'
                 return JsonResponse(response)
             new_submit = PublicListCheck(user_id=user_obj,user_study_list_id=list_obj)
             new_submit.save()
