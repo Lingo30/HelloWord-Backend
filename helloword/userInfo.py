@@ -174,7 +174,10 @@ def submit_image(request):
     response['state'] = False
 
     try:
-        iid = int(str(request.FILES.get('user_id').read())[2:-1])
+        str_tmp = str(request.FILES.get('user_id').read())[2:-1].replace("\"", "")
+        print(str_tmp)
+        iid = int(str_tmp)
+        #iid = int(str(request.FILES.get('user_id').read())[2:-1])
         if not checkCookie(request,response,iid):
             return JsonResponse(response)
         file = request.FILES.get('img')

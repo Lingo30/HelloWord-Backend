@@ -64,6 +64,9 @@ def get_wordList_smart_from_file(request):
     response['state'] = False
 
     try:
+        str_tmp = str(request.FILES.get('userId').read())[2:-1].replace("\"", "")
+        print(str_tmp)
+        user_id = int(str_tmp)
         file = request.FILES.get('file')
         newfile = FileInfo(file_info=file)
         newfile.save()
