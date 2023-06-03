@@ -88,6 +88,10 @@ def words_to_story(request):
 
             words_story = WordsStory(user_id=user_obj)
             times_left = dailly_times-WordsStory.objects.filter(user_id_id = user_obj,post_time__gte=datetime.date.today()).count()
+
+            if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
+                times_left += 2
+
             if times_left==0:
                 response['msg'] = '今天的故事模式次数已经用完啦！明天再来吧'
                 response['last_times'] = 0
@@ -156,6 +160,9 @@ def get_blank_text(request):
 
         times_left = dailly_times - WordsCloze.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
+
+        if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
+            times_left+=2
 
         w = WordsCloze(user_id=user_obj)
         if times_left == 0:
@@ -296,6 +303,9 @@ def writing_analysis(request):
 
         times_left = dailly_times - WritingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
+
+        if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
+            times_left+=2
         w = WritingHistory(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的作文分析次数已经用完啦！明天再来吧'
@@ -386,6 +396,10 @@ def sentence_analysis(request):
 
         times_left = dailly_times - ReadingHistory.objects.filter(user_id_id=user_obj,
                                                               post_time__gte=datetime.date.today()).count()
+
+        if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
+            times_left+=2
+
         w = ReadingHistory(user_id=user_obj)
         if times_left == 0:
             response['msg'] = '今天的长难句分析次数已经用完啦！明天再来吧'

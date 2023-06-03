@@ -744,7 +744,7 @@ def get_user_info(request):
             'email': user.email if user.email else '',
             'words': UserStudyWordInfo.objects.filter(user_id_id=user).count(),
             'name': user.not_unique_name if user.not_unique_name else '',
-            'days': user.study_days_count if user.study_days_count else 0,
+            'days': user.month_login if user.month_login else 0,
             'lists': UserStudyList.objects.filter(user_id_id=user,has_done=True).count(),
             'tags': user.tags.split(" "),
             'last_time': cal_vip_second

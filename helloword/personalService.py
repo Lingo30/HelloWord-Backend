@@ -14,6 +14,8 @@ import re
 from zhon.hanzi import punctuation
 
 # TODO:增加id及次数控制、加锁
+
+dailly_times = 5
 def get_wordlist_from_tags(request):
     response = {}
     response['state'] = False
@@ -67,8 +69,15 @@ def get_wordList_smart_from_file(request):
         str_tmp = str(request.FILES.get('userId').read())[2:-1].replace("\"", "")
         print(str_tmp)
         user_id = int(str_tmp)
+
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+        user_obj = UserInfo.objects.get(id=user_id)
+
+
         file = request.FILES.get('file')
-        newfile = FileInfo(file_info=file)
+        newfile = FileInfo(file_info=file,user_id=user_obj)
+
         newfile.save()
 
         filepath = 'media/'+str(newfile.file_info)

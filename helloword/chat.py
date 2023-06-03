@@ -40,6 +40,10 @@ def user_send(request):
         times_left = dailly_times - ChatHistory.objects.filter(user_id_id=user_obj,
                                                                type=True,
                                                               post_time__gte=datetime.date.today()).count()
+
+        if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
+            times_left+=2
+
         if times_left == 0:
             response['last_times'] = 0
             response['msg'] = '今天的对话次数已经用完啦！明天再来吧'
@@ -105,6 +109,10 @@ def submit_video(request):
         user_chat = AudioHistory(user_id=user_obj, audio=file, type=True)
 
         times_left = dailly_times - AudioHistory.objects.filter(user_id_id=user_obj,type=True,post_time__gte=datetime.date.today()).count()
+
+        if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
+            times_left+=2
+
         if times_left == 0:
             response['last_times'] = 0
             response['msg'] = '今天的语音对话次数已经用完啦！明天再来吧'
