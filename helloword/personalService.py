@@ -12,6 +12,7 @@ from chatgpt.tools import wordlist, utils
 import pdfplumber
 import re
 from zhon.hanzi import punctuation
+from django.core.files import File
 
 # TODO:增加id及次数控制、加锁
 
@@ -70,11 +71,8 @@ def get_wordlist_from_tags(request):
         response['wordlist']=ret
         response['state'] = True
 
-        file = open("../file_tmp.txt",'w')
-        file.close()
-        f = open("../file_tmp.txt",'rb')
-
-        newfile = FileInfo(file_info=f, user_id=user_obj)
+        newfile = FileInfo(user_id=user_obj)
+        newfile.file_info.save('file_tmp.txt', File(open('../file_tmp.txt', 'rb')))
         newfile.save()
 
         times_left -= 1
