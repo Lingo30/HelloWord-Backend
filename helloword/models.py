@@ -43,6 +43,7 @@ class EmailResetToken(models.Model):
 class FileInfo(models.Model):
     file_info = models.FileField(upload_to="user_file/")
     user_id = models.ForeignKey("UserInfo", on_delete=models.CASCADE,null=True)
+    post_time = models.DateTimeField(auto_now=True, null=True)
 
 class Word(models.Model):
     word = models.CharField(max_length=64, unique=True)
