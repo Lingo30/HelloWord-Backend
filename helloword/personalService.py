@@ -71,8 +71,10 @@ def get_wordlist_from_tags(request):
         response['state'] = True
 
         file = open("../file_tmp.txt",'w')
+        file.close()
+        f = open("../file_tmp.txt",'rb')
 
-        newfile = FileInfo(file_info=file, user_id=user_obj)
+        newfile = FileInfo(file_info=f, user_id=user_obj)
         newfile.save()
 
         times_left -= 1
