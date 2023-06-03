@@ -291,6 +291,8 @@ def add_wordlist_from_official(request):
             list_name = study_list_name,
             create_type='official'
         )
+        if public.list_author:
+            to_add.list_author = public.list_author
         to_add.save()
 
 
