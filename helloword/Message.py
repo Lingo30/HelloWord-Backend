@@ -28,10 +28,13 @@ def get_messages(request):
         ret = []
         pattern = r'\..{6}'
         for i in UserMessage.objects.filter(user_id_id=user_obj).order_by('-post_time'):
-            type='其他'
+            type='通知'
             find_type = re.findall(r"[【].*?[】]", i.message)
             if len(find_type)>0:
-                type=find_type[0]
+                if find_type[0]!='1':
+                    type=find_type[0]
+                else:
+                    type = '平台更新公告'
 
             cur = {
                 'id': i.id,
@@ -136,7 +139,7 @@ def send_to_all(request):
 
         user_all = UserInfo.objects.all()
         for k in user_all:
-            message_obj = UserMessage(user_id=k, message=message)
+            message_obj = UserMessage(user_id=k, message='【平台公告】'+message)
             message_obj.save()
 
         response['state'] = True
