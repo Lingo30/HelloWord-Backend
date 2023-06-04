@@ -131,7 +131,8 @@ def get_wordlist_info(request):
         if study_list.create_type and study_list.create_type == 'private':
             response['official'] = False
         elif study_list.list_author:
-            response['official'] = False
+            if study_list.list_author.id == study_list.user_id.id:
+                response['official'] = False
 
         response['state'] = True
 
