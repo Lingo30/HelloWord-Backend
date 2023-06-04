@@ -28,13 +28,13 @@ def get_messages(request):
         ret = []
         pattern = r'\..{6}'
         for i in UserMessage.objects.filter(user_id_id=user_obj).order_by('-post_time'):
-            type='通知'
+            type='【通知】'
             find_type = re.findall(r"[【].*?[】]", i.message)
             if len(find_type)>0:
                 if find_type[0]!="【1】":
                     type=find_type[0]
                 else:
-                    type = '平台更新公告'
+                    type = '【平台更新公告】'
 
             cur = {
                 'id': i.id,
