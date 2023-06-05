@@ -19,6 +19,11 @@ def get_feedbacks(request):
         if not checkCookie(request,response,admin_id):
             return JsonResponse(response)
 
+        admin_obj = UserInfo.objects.get(id=admin_id)
+        if admin_obj.user_type!='admin':
+            response['msg'] = '没有管理员权限'
+            return JsonResponse(response)
+
         ret = []
         pattern = r'\..{6}'
         for i in Feedback.objects.all():
@@ -54,6 +59,11 @@ def set_read_message(request):
         if not checkCookie(request, response, admin_id):
             return JsonResponse(response)
 
+        admin_obj = UserInfo.objects.get(id=admin_id)
+        if admin_obj.user_type != 'admin':
+            response['msg'] = '没有管理员权限'
+            return JsonResponse(response)
+
         msg = Feedback.objects.get(id=messageId)
         msg.has_read=True
         msg.save()
@@ -74,6 +84,11 @@ def get_user_submit_wordlists(request):
         admin_id = data.get('adminId')
 
         if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
+
+        admin_obj = UserInfo.objects.get(id=admin_id)
+        if admin_obj.user_type != 'admin':
+            response['msg'] = '没有管理员权限'
             return JsonResponse(response)
 
         ret = []
@@ -112,6 +127,11 @@ def accept_submit_wordlist(request):
         list_id = data.get('listId')
 
         if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
+
+        admin_obj = UserInfo.objects.get(id=admin_id)
+        if admin_obj.user_type != 'admin':
+            response['msg'] = '没有管理员权限'
             return JsonResponse(response)
 
         list_obj = UserStudyList.objects.get(id=list_id)
@@ -173,6 +193,11 @@ def reject_submit_wordlist(request):
         if not checkCookie(request,response,admin_id):
             return JsonResponse(response)
 
+        admin_obj = UserInfo.objects.get(id=admin_id)
+        if admin_obj.user_type != 'admin':
+            response['msg'] = '没有管理员权限'
+            return JsonResponse(response)
+
         list_obj = UserStudyList.objects.get(id=list_id)
         check_find = PublicListCheck.objects.filter(user_study_list_id_id=list_obj,check_status='user_submit')
         if check_find.count() == 0:
@@ -210,6 +235,11 @@ def get_submit_wordlist(request):
         listId = data.get('listId')
 
         if not checkCookie(request,response,admin_id):
+            return JsonResponse(response)
+
+        admin_obj = UserInfo.objects.get(id=admin_id)
+        if admin_obj.user_type != 'admin':
+            response['msg'] = '没有管理员权限'
             return JsonResponse(response)
 
         study_list = UserStudyList.objects.get(id=listId)
