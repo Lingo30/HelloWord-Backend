@@ -634,6 +634,7 @@ def reset_password(request):
         userInfo.save()
         response['state'] = True
 
+
     except Exception as e:
         response['msg'] = str(e)
 
@@ -702,7 +703,7 @@ def change_pwd(request):
             user.password_hash = new_pwd
             user.save()
             response['state'] = True
-            return wrapRes(response, user_id)
+            return wrapNewRes(response, user_id)
 
         else:
             response['msg'] = '原密码错误'
