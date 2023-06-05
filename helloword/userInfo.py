@@ -359,6 +359,10 @@ def login(request):
         value = data.get('verify')
         key = data.get('imgCode')
 
+        if value=="":
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
+
         if codeMap.get(key,'').lower() != str(value).lower():
             response['msg'] = '验证码错误'
             return JsonResponse(response)
@@ -415,6 +419,10 @@ def adminLogin(request):
     try:
         value = data.get('verify')
         key = data.get('imgCode')
+
+        if value=="":
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
 
         if codeMap.get(key,'').lower() != str(value).lower():
             response['msg'] = '验证码错误'
@@ -480,6 +488,10 @@ def register(request):
     try:
         value = data.get('verify')
         key = data.get('imgCode')
+
+        if value=="":
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
 
         if codeMap.get(key, '') != value:
             response['msg'] = '验证码错误'
@@ -586,6 +598,10 @@ def reset_password(request):
 
         value = data.get('verify')
         key = data.get('imgCode')
+
+        if value=="":
+            response['msg'] = '验证码错误'
+            return JsonResponse(response)
 
         if codeMap.get(key, '') != value:
             response['msg'] = '验证码错误'
