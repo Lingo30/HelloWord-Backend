@@ -287,6 +287,25 @@ def get_verify_img(request):
 
     return JsonResponse(response)
 
+def logout(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        user_id = data.get('userId')
+        if not checkCookie(request, response, user_id):
+            return JsonResponse(response)
+
+        user_obj = UserInfo.objects.get(id=user_id)
+        user_obj.cookie_token=''
+        user_obj.save()
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
+
+
 
 def get_vip_info(request):
     response = {}

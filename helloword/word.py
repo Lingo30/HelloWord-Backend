@@ -10,6 +10,31 @@ from helloword.models import Word,UserInfo,Example,WordExample,WordRelation,User
 from helloword.models import WordList,WordListItem,UserStudyList,UserStudyListItem,DailyNum
 from helloword.userInfo import checkCookie, wrapRes
 
+def get_new_example(request):
+    response = {}
+    response['state'] = False
+
+    try:
+        data = json.loads(request.body.decode())
+        user_id = data.get('user_id')
+        word_id = data.get('word_id')
+        if not checkCookie(request,response,user_id):
+            return JsonResponse(response)
+
+        base_word = Word.objects.get(id=word_id)
+
+        example_sen = '暂无例句'
+        example_objs = WordExample.objects.filter(word_id_id=base_word)
+        if example_objs.count() > 0:
+            k=random.randrange(0,example_objs.count())
+            example_sen = example_objs[k].example_id.example_sentence + example_objs[k].example_id.example_translation
+
+
+
+    except Exception as e:
+        response['msg'] = str(e)
+
+    return JsonResponse(response)
 
 def get_user_statistic(request):
     response = {}
@@ -366,7 +391,8 @@ def get_group_words_in_list(request):
             example_objs = WordExample.objects.filter(word_id_id=base_word)
             if example_objs.count() > 0:
                 # TODO 补充例句返回逻辑 现在返回首个例句
-                example_sen = example_objs[0].example_id.example_sentence + example_objs[0].example_id.example_translation
+                k = random.randrange(0, example_objs.count())
+                example_sen = example_objs[k].example_id.example_sentence + example_objs[k].example_id.example_translation
 
             synonyms_list = []
             antonyms_list = []
