@@ -300,6 +300,7 @@ def logout(request):
         user_obj = UserInfo.objects.get(id=user_id)
         user_obj.cookie_token=''
         user_obj.save()
+        response['state'] = False
     except Exception as e:
         response['msg'] = str(e)
 

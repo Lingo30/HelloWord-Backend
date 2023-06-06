@@ -29,7 +29,8 @@ def get_new_example(request):
             k=random.randrange(0,example_objs.count())
             example_sen = example_objs[k].example_id.example_sentence + example_objs[k].example_id.example_translation
 
-
+        response['state'] = True
+        return wrapRes(response, user_id)
 
     except Exception as e:
         response['msg'] = str(e)
