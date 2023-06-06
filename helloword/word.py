@@ -28,7 +28,7 @@ def get_new_example(request):
         if example_objs.count() > 0:
             k=random.randrange(0,example_objs.count())
             example_sen = example_objs[k].example_id.example_sentence + example_objs[k].example_id.example_translation
-
+        response['example'] = example_sen
         response['state'] = True
         return wrapRes(response, user_id)
 
