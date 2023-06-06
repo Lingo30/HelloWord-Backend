@@ -112,6 +112,7 @@ urlpatterns = [
     path("get_group_words_in_list/", wordview.get_group_words_in_list),
     path("get_search_word/", wordview.get_search_word),
     path("get_user_statistic/",wordview.get_user_statistic),
+    path("get_new_example/",wordview.get_new_example),
 
     #path("reset_study_list/", wordview.reset_study_list),
 
