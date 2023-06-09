@@ -33,6 +33,10 @@ def get_wordlist_from_tags(request):
         times_left = dailly_times - FileInfo.objects.filter(user_id_id=user_obj,
                                                             post_time__gte=datetime.date.today()).count()
 
+        if len(tags) > 20:
+            response['msg'] = '标签数过多'
+            return JsonResponse(response)
+
         if user_obj.vip_time and user_obj.vip_time > datetime.datetime.now():
             times_left += 2
 
@@ -46,7 +50,12 @@ def get_wordlist_from_tags(request):
         message = wordlist.gen_wordlist_from_keywords(tags)
         rcv_message = client.Client().send_message(message)
         print(rcv_message)
-        extract_words = str(re.findall(r"[\[](.*?)[\]]", rcv_message)[0]).split(', ')
+        k = re.findall(r"[\[](.*?)[\]]", rcv_message)
+        if len(k)==0:
+            response['msg'] = '所给关键词未生成有效单词，换一个主题词吧~'
+            return JsonResponse(response)
+
+        extract_words = str(k[0]).split(', ')
 
         lower_extract_words=[]
         for i in extract_words:
