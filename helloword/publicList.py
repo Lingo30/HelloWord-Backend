@@ -281,7 +281,7 @@ def submit_official_wordlist(request):
         user_obj = UserInfo.objects.get(id=user_id)
         list_obj = UserStudyList.objects.get(id=list_id)
         if PublicListCheck.objects.filter(user_id=user_obj,user_study_list_id_id=list_obj).exclude(check_status='reject').count() == 0:
-            if list_obj.list_author.id != user_id:
+            if list_obj.list_author.username!=user_obj.username:
                 response['msg'] = '词单与作者不匹配'
                 return JsonResponse(response)
             test_official = True
