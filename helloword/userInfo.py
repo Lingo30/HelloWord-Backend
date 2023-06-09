@@ -513,7 +513,7 @@ def register(request):
             response['msg'] = '验证码错误'
             return JsonResponse(response)
 
-        if codeMap.get(key, '') != value:
+        if codeMap.get(key,'').lower() != str(value).lower():
             response['msg'] = '验证码错误'
             return JsonResponse(response)
 
@@ -623,7 +623,7 @@ def reset_password(request):
             response['msg'] = '验证码错误'
             return JsonResponse(response)
 
-        if codeMap.get(key, '') != value:
+        if codeMap.get(key, '').lower() != str(value).lower():
             response['msg'] = '验证码错误'
             return JsonResponse(response)
 
